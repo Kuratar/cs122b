@@ -55,7 +55,6 @@ function handleMovieResult(resultData) {
         starHTML += "</th>";
 
         rowHTML += starHTML;
-        rowHTML += "<th>" + resultData[i]["movie_stars"] + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
         rowHTML += "</tr>";
 
