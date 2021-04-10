@@ -63,10 +63,15 @@ function handleResult(resultData) {
     let starIdsSplit = starIds.split(", ");
     let starNamesSplit = starNames.split(", ");
     for (let i = 0; i < starIdsSplit.length; i++) {
-        //
         let rowHTML = "";
         rowHTML += "<tr>";
-        rowHTML += "<th>" + starNamesSplit[i] + "</th>";
+        rowHTML +=
+            "<th>" +
+            // add a link to single-star.html with id passed with GET url parameter
+            '<a href="single-star.html?id=' + starIdsSplit[i] + '">'
+            + starNamesSplit[i] + // display star_name for the link text
+            '</a>' +
+            "</th>";
         rowHTML += "</tr>";
         // Append the row created to the table body, which will refresh the page
         movieTableBodyElement.append(rowHTML);

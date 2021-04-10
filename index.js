@@ -36,11 +36,31 @@ function handleMovieResult(resultData) {
         rowHTML += "<th>" + resultData[i]["movie_year"] + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_director"] + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_genres"] + "</th>";
+
+        // add stars in one column with links
+        let starsIds = resultData[i]["movie_star_ids"];
+        let stars = resultData[i]["movie_stars"];
+        let starsIdsSplit = starsIds.split(", ");
+        let starsSplit = stars.split(", ");
+        let starHTML = "";
+        starHTML += "<th>";
+        for (let j = 0; j < starsSplit.length; j++) {
+            starHTML +=
+                // add a link to single-star.html with id passed with GET url parameter
+                '<a href="single-star.html?id=' + starsIdsSplit[j] + '">'
+                + starsSplit[j] + // display star_name for the link text
+                '</a>' + ", ";
+        }
+        starHTML = starHTML.slice(0, -2);
+        starHTML += "</th>";
+
+        rowHTML += starHTML;
         rowHTML += "<th>" + resultData[i]["movie_stars"] + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
+        rowHTML += "</tr>";
 
         // append the row created to the table body, which will refresh the page
-        starTableBodyElement.append(rowHTML);
+        movieTableBodyElement.append(rowHTML);
     }
 }
 

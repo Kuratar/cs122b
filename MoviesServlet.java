@@ -83,7 +83,7 @@ public class MoviesServlet extends HttpServlet {
             for (int i = 0; i<jsonArray.size(); i++)
             {
                 JsonObject movie = jsonArray.get(i).getAsJsonObject(); //convert from jsonElement to jsonObject
-                String query2 = "select name\n" +
+                String query2 = "select stars.id, name\n" +
                         "from stars_in_movies, stars\n" +
                         "where movieId=" + movie.get("movie_id") + " and stars.id = stars_in_movies.starId\n" +
                         "limit 3"; //query 2
@@ -91,11 +91,15 @@ public class MoviesServlet extends HttpServlet {
                 System.out.println(query2);
                 ResultSet rstemp = statement.executeQuery(query2); //Another resultset to execute 2nd query
                 String stars = "";
+                String starIds = "";
                 while (rstemp.next())
                 {
                     stars += rstemp.getString("name") + ", "; //append each star_id to empty string
+                    starIds += rstemp.getString("id") + ", ";
                 }
                 stars = stars.replaceAll(", $", "");
+                starIds = starIds.replace(", $", "");
+                movie.addProperty("movie_star_ids", starIds);
                 movie.addProperty("movie_stars", stars); //add the star_ids as a property of the jsonObject
                 rstemp.close();
             }
