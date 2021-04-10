@@ -54,6 +54,7 @@ function handleResult(resultData) {
     // Find the empty table body by id "movie_table_body"
     let movieTableBodyElement = jQuery("#movie_table_body");
 
+
     // Concatenate the html tags with resultData jsonObject to create table rows
     for (let i = 0; i < resultData.length; i++) {
         let rowHTML = "";
@@ -68,6 +69,7 @@ function handleResult(resultData) {
         // Append the row created to the table body, which will refresh the page
         movieTableBodyElement.append(rowHTML);
     }
+    movieTableBodyElement.append("<p>" + '<a href="index.html">' + "Back" + '</a>' + "</p>");
 }
 
 /**

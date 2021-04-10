@@ -76,6 +76,7 @@ function handleResult(resultData) {
         // Append the row created to the table body, which will refresh the page
         movieTableBodyElement.append(rowHTML);
     }
+    movieTableBodyElement.append("<p>" + '<a href="index.html">' + "Back" + '</a>' + "</p>");
 }
 
 /**
