@@ -106,7 +106,6 @@ public class SingleMovieServlet extends HttpServlet {
                             break;
                         }
                         starIds += rs3.getString("id") + ", ";
-                        System.out.println("adding" + rs3.getString("name"));
                         starNames += rs3.getString("name") + ", ";
                     }
 

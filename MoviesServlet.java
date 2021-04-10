@@ -88,7 +88,6 @@ public class MoviesServlet extends HttpServlet {
                         "where movieId=" + movie.get("movie_id") + " and stars.id = stars_in_movies.starId\n" +
                         "limit 3"; //query 2
 
-                System.out.println(query2);
                 ResultSet rstemp = statement.executeQuery(query2); //Another resultset to execute 2nd query
                 String stars = "";
                 String starIds = "";

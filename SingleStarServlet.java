@@ -53,7 +53,6 @@ public class SingleStarServlet extends HttpServlet {
             String query = "select name, birthYear\n" +
                     "from stars\n" +
                     "where id='" + id + "'";
-            System.out.println(query);
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
 
@@ -64,7 +63,6 @@ public class SingleStarServlet extends HttpServlet {
                     "from movies, stars_in_movies\n" +
                     "where stars_in_movies.starId='" + id + "' and " +
                     "stars_in_movies.movieId = movies.id";
-            System.out.println(query2);
             PreparedStatement statement2 = conn.prepareStatement(query2);
             ResultSet rs2 = statement2.executeQuery();
 
