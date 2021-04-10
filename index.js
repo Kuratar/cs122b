@@ -75,4 +75,4 @@ jQuery.ajax({
     method: "GET", // Setting request method
     url: "api/movies", // Setting request url, which is mapped by MoviesServlet in Movies.java
     success: (resultData) => handleMovieResult(resultData) // Setting callback function to handle data returned successfully by the MoviesServlet
-});a
+});
