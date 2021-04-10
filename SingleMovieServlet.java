@@ -52,7 +52,6 @@ public class SingleMovieServlet extends HttpServlet {
                         "where movies.id='" + id + "' and " +
                         "ratings.movieId='" + id + "'";
                 PreparedStatement statement = conn.prepareStatement(query);
-                //statement.setString(1, id);
                 ResultSet rs = statement.executeQuery();
                 String query2 = "select name\n" +
                         "from genres_in_movies, genres\n" +
@@ -107,6 +106,7 @@ public class SingleMovieServlet extends HttpServlet {
                             break;
                         }
                         starIds += rs3.getString("id") + ", ";
+                        System.out.println("adding" + rs3.getString("name"));
                         starNames += rs3.getString("name") + ", ";
                     }
 
@@ -145,4 +145,4 @@ public class SingleMovieServlet extends HttpServlet {
         }
 
     }
-}
+}a
