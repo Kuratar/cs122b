@@ -15,18 +15,29 @@ INDEX.JS SHOULD ALSO CHANGE TO A PAGE WHERE USERS CAN SEARCH OR BROWSE
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <title>User Login</title>
+    <title>Login to Fabflix</title>
 </head>
 
 <body>
-<h1 ALIGN="CENTER">User Login</h1>
+<h1 ALIGN="CENTER">Login to Fabflix</h1>
 
-<form ACTION="form" METHOD="POST">
-    Username: <input TYPE="TEXT" name="username"> (Use % to replace any strings. e.g. Arnold%)<br>
-    Password: <input TYPE="PASSWORD" name="password"><br>
-    <input TYPE="SUBMIT" VALUE="Login">
-
+<!-- Set the method to POST to avoid showing the username/password in the URL
+     The default action is disabled to allow your own implementation. -->
+<form id="login_form" method="post" action="#">                                     <!-- probably change action to MainPage?-->
+    <label><b>Email Address</b></label>
+    <label>
+        <input name="email" placeholder="Enter Email Address" type="text">
+    </label>
+    <br>
+    <label><b>Password</b></label>
+    <label>
+        <input name="password" placeholder="Enter Password" type="password">
+    </label>
+    <br>
+    <input type="submit" value="Login">
 </form>
+
+<div id="login_error_message"></div>
 
 <!-- Load jQuery and Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
