@@ -22,16 +22,59 @@
 <body>
 <h1 ALIGN="CENTER">Welcome to Fabflix</h1>
 <br>
+
+<h2>Search Movies</h2>
+<form id="search_form" method="get" action="#">
+    <label style="font-size: x-large"><b>Title</b></label>
+    <label>
+        <input name="title" placeholder="Enter Title of Movie" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <label style="font-size: x-large"><b>Year</b></label>
+    <label>
+        <input name="year" placeholder="Enter Release Year of Movie" type="number" style="font-size: x-large">
+    </label>
+    <br>
+    <label style="font-size: x-large"><b>Director</b></label>
+    <label>
+        <input name="director" placeholder="Enter Director of Movie" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <label style="font-size: x-large"><b>Star</b></label>
+    <label>
+        <input name="star" placeholder="Enter a Star's Name" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <input type="submit" value="Search" style="font-size: x-large">
+</form>
+<br>
 <br>
 
-<!-- Set the method to POST to avoid showing the username/password in the URL
-     The default action is disabled to allow your own implementation. -->
-<form id="main_form" method="get" action="#">
-    <h2 ALIGN="Center"><a href="search.html">Search Movies</a></h2>
-    <br>
-    <br>
-    <h2 ALIGN="Center"><a href="browse.html">Browse Movies</a></h2>
-</form>
+<h2>Browse by Genre</h2>
+<table id=genre_table class="table table-striped">
+    <!-- table header -->
+    <thead>
+    <tr>
+        <!-- titles of columns-->
+        <th>Genres</th>
+    </tr>
+    </thead>
+    <tbody id=genre_table_body></tbody>
+</table>
+<br>
+<br>
+
+<h2>Browse by Title</h2>
+<table id=title_table class="table table-striped">
+    <!-- table header -->
+    <thead>
+    <tr>
+        <!-- titles of columns-->
+        <th>First Character of Movie Titles</th>
+    </tr>
+    </thead>
+    <tbody id=title_table_body></tbody>
+</table>
 
 <!--&lt;!&ndash; Load jQuery and Bootstrap JS &ndash;&gt;-->
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
