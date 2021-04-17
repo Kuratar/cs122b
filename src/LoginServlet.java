@@ -53,26 +53,27 @@ public class LoginServlet extends HttpServlet {
             // Perform check user query
             ResultSet rs = statement.executeQuery(userQuery);
 
-            rs.next();
-            int userId = rs.getInt("id");
-            String firstName = rs.getString("firstName");
-            String lastName = rs.getString("lastName");
-            int ccId = rs.getInt("ccId");
-            String address = rs.getString("address");
-            if (firstName == null || lastName == null) {
-                // Login fail
-                responseJsonObject.addProperty("status", "fail");
-                responseJsonObject.addProperty("message", "Incorrect email or password");
-            } else {
+            if (rs.next()) {
                 // login success
+                int userId = rs.getInt("id");
+                String firstName = rs.getString("firstName");
+                String lastName = rs.getString("lastName");
+                int ccId = rs.getInt("ccId");
+                String address = rs.getString("address");
+
                 request.getSession().setAttribute("user", new User(userId, firstName, lastName, ccId, address));
                 responseJsonObject.addProperty("status", "success");
                 responseJsonObject.addProperty("message", "success");
+
+            } else {
+                // login fail
+                responseJsonObject.addProperty("status", "fail");
+                responseJsonObject.addProperty("message", "Incorrect email or password");
             }
+
             rs.close();
             statement.close();
             response.setStatus(200);
-
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
