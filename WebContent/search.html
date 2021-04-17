@@ -10,29 +10,39 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <title>Login to Fabflix</title>
+    <title>Search Movies</title>
 </head>
 
 <body>
-<h1 ALIGN="CENTER">Login to Fabflix</h1>
+<h1 ALIGN="CENTER" >Search Movies</h1>
 
 <!-- Set the method to POST to avoid showing the username/password in the URL
      The default action is disabled to allow your own implementation. -->
-<form id="login_form" method="post" action="#">                                     <!-- probably change action to MainPage?-->
-    <label style="font-size: x-large"><b>Email Address</b></label>
+<form id="search_form" method="get" action="#">
+    <label style="font-size: x-large"><b>Title</b></label>
     <label>
-        <input name="email" placeholder="Enter Email Address" type="text" style="font-size: x-large">
+        <input name="title" placeholder="Enter Title of Movie" type="text" style="font-size: x-large">
     </label>
     <br>
-    <label style="font-size: x-large"><b>Password</b></label>
+    <label style="font-size: x-large"><b>Year</b></label>
     <label>
-        <input name="password" placeholder="Enter Password" type="password" style="font-size: x-large">
+        <input name="year" placeholder="Enter Release Year of Movie" type="number" style="font-size: x-large">
     </label>
     <br>
-    <input type="submit" value="Login" style="font-size: x-large">
+    <label style="font-size: x-large"><b>Director</b></label>
+    <label>
+        <input name="director" placeholder="Enter Director of Movie" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <label style="font-size: x-large"><b>Star</b></label>
+    <label>
+        <input name="star" placeholder="Enter a Star's Name" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <input type="submit" value="Search" style="font-size: x-large">
 </form>
 
-<div id="login_error_message"></div>
+<div id="search_error_message"></div>
 
 <!-- Load jQuery and Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -43,7 +53,7 @@
 <!-- The path is relative to login.html, since these two files are in the same directory -->
 <!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
      otherwise the url is relative to the root path-->
-<script src="login.js"></script>
+<script src="search.js"></script>
 </body>
 
 
