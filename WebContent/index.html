@@ -24,7 +24,7 @@
 <br>
 
 <h2>Search Movies</h2>
-<form id="search_form" method="get" action="#">
+<form id="search_form" method="get" action="search.html">
     <label style="font-size: x-large"><b>Title</b></label>
     <label>
         <input name="title" placeholder="Enter Title of Movie" type="text" style="font-size: x-large">
@@ -56,7 +56,7 @@
     <thead>
     <tr>
         <!-- titles of columns-->
-        <th>Genres</th>
+        <th style="font-size: x-large">Genres</th>
     </tr>
     </thead>
     <tbody id=genre_table_body></tbody>
@@ -70,22 +70,22 @@
     <thead>
     <tr>
         <!-- titles of columns-->
-        <th>First Character of Movie Titles</th>
+        <th style="font-size: x-large">First Character of Movie Titles</th>
     </tr>
     </thead>
     <tbody id=title_table_body></tbody>
 </table>
 
-<!--&lt;!&ndash; Load jQuery and Bootstrap JS &ndash;&gt;-->
-<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>-->
-<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>-->
+<!-- Load jQuery and Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-<!--&lt;!&ndash; Load our own JS file &ndash;&gt;-->
-<!--&lt;!&ndash; The path is relative to login.html, since these two files are in the same directory &ndash;&gt;-->
-<!--&lt;!&ndash; Note the url does not contain a "/" in the beginning, which means the url is relative to current path-->
-<!--     otherwise the url is relative to the root path&ndash;&gt;-->
-<!--<script src="login.js"></script>-->
+<!-- Load our own JS file -->
+<!-- The path is relative to login.html, since these two files are in the same directory -->
+<!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
+     otherwise the url is relative to the root path-->
+<script src="index.js"></script>
 </body>
 
 

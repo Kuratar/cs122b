@@ -13,54 +13,75 @@
  * Handles the data returned by the API, read the jsonObject and populate data into html elements
  * @param resultData jsonObject
  */
-function handleMovieResult(resultData) {
-    console.log("handleMovieResult: populating movie table from resultData");
+function handleGenresResult(resultData) {
+    console.log("handleGenresResult: populating genre table from resultData");
 
-    // populate movie table
-    //find empty table body by id "movie_table_body"
-    let movieTableBodyElement = jQuery("#movie_table_body");
+    // populate genre table
+    // find empty table body by id "genre_table_body"
+    let genreTableBodyElement = jQuery("#genre_table_body");
 
-    // iterate through resultData, should be 20 entries
+    // iterate through resultData
     for (let i = 0; i < resultData.length; i++) {
-
         // concatenate the html tags with resultData jsonObject
         let rowHTML = "";
         rowHTML += "<tr>";
         rowHTML +=
-            "<th>" +
-            // add a link to single-movie.html with id passed with GET url parameter
-            '<a href="single-movie.html?id=' + resultData[i]['movie_id'] + '">'
-            + resultData[i]["movie_title"] + // display movie_name for the link text
+            "<th style='font-size: x-large'>" +
+            // add a link to browse-genre.html with id passed with GET url parameter
+            '<a href="browse-genre.html?name=' + resultData[i]['genre_name'] + '">'
+            + resultData[i]["genre_name"] + // display genre_name for the link text
             '</a>' +
             "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_year"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_director"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_genres"] + "</th>";
-
-        // add stars in one column with links
-        let starsIds = resultData[i]["movie_star_ids"];
-        let stars = resultData[i]["movie_stars"];
-        let starsIdsSplit = starsIds.split(", ");
-        let starsSplit = stars.split(", ");
-        let starHTML = "";
-        starHTML += "<th>";
-        for (let j = 0; j < starsSplit.length; j++) {
-            starHTML +=
-                // add a link to single-star.html with id passed with GET url parameter
-                '<a href="single-star.html?id=' + starsIdsSplit[j] + '">'
-                + starsSplit[j] + // display star_name for the link text
-                '</a>' + ", ";
-        }
-        starHTML = starHTML.slice(0, -2);
-        starHTML += "</th>";
-
-        rowHTML += starHTML;
-        rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
         rowHTML += "</tr>";
 
         // append the row created to the table body, which will refresh the page
-        movieTableBodyElement.append(rowHTML);
+        genreTableBodyElement.append(rowHTML);
     }
+}
+
+
+function handleTitles() {
+    console.log("handleTitles: populating title table from resultData");
+
+    // populate title table
+    // find empty table body by id "title_table_body"
+    let titleTableBodyElement = jQuery("#title_table_body");
+
+    let firstChars = ["0","1","2","3","4","5","6","7","8","9",
+                      "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+
+    // iterate through first chars of titles
+    for (let i = 0; i < firstChars.length; i++) {
+        // concatenate the html tags with resultData jsonObject
+        let rowHTML = "";
+        rowHTML += "<tr>";
+        rowHTML +=
+            "<th style='font-size: x-large'>" +
+            // add a link to browse-title.html with id passed with GET url parameter
+            '<a href="browse-title.html?char=' + firstChars[i] + '">'
+            + firstChars[i] + // display char for the link text
+            '</a>' +
+            "</th>";
+        rowHTML += "</tr>";
+
+        // append the row created to the table body, which will refresh the page
+        titleTableBodyElement.append(rowHTML);
+    }
+
+    // add * to titles
+    let lastRowHTML = "";
+    lastRowHTML += "<tr>";
+    lastRowHTML +=
+        "<th style='font-size: x-large'>" +
+        // add a link to browse-title.html with id passed with GET url parameter
+        '<a href="browse-title.html?char=' + '*' + '">' +
+        "* (Non-alphanumerical characters)" +
+        '</a>' +
+        "</th>";
+    lastRowHTML += "</tr>";
+
+    // append the row created to the table body, which will refresh the page
+    titleTableBodyElement.append(lastRowHTML);
 }
 
 
@@ -72,6 +93,8 @@ function handleMovieResult(resultData) {
 jQuery.ajax({
     dataType: "json", // Setting return data type
     method: "GET", // Setting request method
-    url: "api/movies", // Setting request url, which is mapped by MoviesServlet in Movies.java
-    success: (resultData) => handleMovieResult(resultData) // Setting callback function to handle data returned successfully by the MoviesServlet
+    url: "api/genres", // Setting request url, which is mapped by MoviesServlet in Movies.java
+    success: (resultData) => handleGenresResult(resultData) // Setting callback function to handle data returned successfully by the MoviesServlet
 });
+
+handleTitles();
