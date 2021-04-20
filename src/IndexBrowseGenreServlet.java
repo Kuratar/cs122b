@@ -40,7 +40,7 @@ public class IndexBrowseGenreServlet extends HttpServlet {
             Statement statement = conn.createStatement();
 
             // query to get all genres
-            String genreQuery = "select distinct(name)\n" +
+            String genreQuery = "select *\n" +
                                 "from genres\n" +
                                 "order by name;";
 
@@ -48,10 +48,12 @@ public class IndexBrowseGenreServlet extends HttpServlet {
             ResultSet rs = statement.executeQuery(genreQuery);
 
             while (rs.next()) {
-                String genre = rs.getString("name");
+                String genreId = rs.getString("id");
+                String genreName = rs.getString("name");
 
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("genre_name", genre);
+                jsonObject.addProperty("genre_id", genreId);
+                jsonObject.addProperty("genre_name", genreName);
 
                 jsonArray.add(jsonObject);
             }

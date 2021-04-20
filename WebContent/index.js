@@ -28,7 +28,7 @@ function handleGenresResult(resultData) {
         rowHTML +=
             "<th style='font-size: x-large'>" +
             // add a link to browse-genre.html with id passed with GET url parameter
-            '<a href="browse-genre.html?name=' + resultData[i]['genre_name'] + '">'
+            '<a href="browse-genre.html?id=' + resultData[i]['genre_id'] + '&nMovies=25&page=0">'
             + resultData[i]["genre_name"] + // display genre_name for the link text
             '</a>' +
             "</th>";
@@ -58,7 +58,7 @@ function handleTitles() {
         rowHTML +=
             "<th style='font-size: x-large'>" +
             // add a link to browse-title.html with id passed with GET url parameter
-            '<a href="browse-title.html?char=' + firstChars[i] + '">'
+            '<a href="browse-title.html?char=' + firstChars[i] + '&nMovies=25">'
             + firstChars[i] + // display char for the link text
             '</a>' +
             "</th>";
@@ -74,7 +74,7 @@ function handleTitles() {
     lastRowHTML +=
         "<th style='font-size: x-large'>" +
         // add a link to browse-title.html with id passed with GET url parameter
-        '<a href="browse-title.html?char=' + '*' + '">' +
+        '<a href="browse-title.html?char=' + '*' + '&nMovies=25">' +
         "* (Non-alphanumerical characters)" +
         '</a>' +
         "</th>";
