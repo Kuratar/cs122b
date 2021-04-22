@@ -77,7 +77,10 @@ function handleBrowseGenreResult(resultData) {
         for (let j = 0; j < genresSplit.length; j++) {
             genreHTML +=
                 // add a link to browse-genre.html with id, nMovies, page passed with GET url parameter
-                '<a href="browse-genre.html?id=' + genreIdsSplit[j] + '&nMovies=25&page=0&sortingOption=select">'
+                '<a href="browse-genre.html?id=' + genreIdsSplit[j] +
+                '&nMovies=' + nMovies +
+                '&page=0' +
+                '&sortingOption=' + sortingOption + '">'
                 + genresSplit[j] + // display star_name for the link text
                 '</a>' + ", ";
         }
