@@ -19,10 +19,17 @@ import java.sql.PreparedStatement;
 public class BrowseByGenreServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    // holds the next page of results
+    private int currentPageNumber;
+    private JsonArray nextPageResults;
+
+
     // Create a dataSource which registered in web.
     private DataSource dataSource;
 
     public void init(ServletConfig config) {
+        // initialize current page number to 0 for first call of class
+        currentPageNumber = 0;
         try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
         } catch (NamingException e) {
@@ -37,99 +44,126 @@ public class BrowseByGenreServlet extends HttpServlet {
         String genreId = request.getParameter("id");
         String nMovies = request.getParameter("nMovies");
         String pageNumber = request.getParameter("page");
-        String sortingOption = request.getParameter("sortingOption");
+        String sortingOption = request.getParameter("sorting");
 
         try (Connection conn = dataSource.getConnection()) {
-            JsonArray jsonArray = new JsonArray();
+            // if next page number is less or equal to currentPageNumber
+            // next page number is less if user goes back thus need to generate results again
+            // next page number is equal if user sorts the current page
+            if (Integer.parseInt(pageNumber) <= currentPageNumber) {
+                for (int i = 0; i < 2; i++) {
+                    JsonArray jsonArray = new JsonArray();
 
-            // query to get all movies associated with genre
-            String query = "select id, title, year, director, rating\n" +
-                    "from movies, ratings, genres_in_movies\n" +
-                    "where genres_in_movies.genreId=" + genreId + " and " +
-                    "genres_in_movies.movieId=movies.id and movies.id=ratings.movieId\n";
-            if (sortingOption.equals("titleRatingASCE")) { query += "order by title, rating\n"; }
-            else if (sortingOption.equals("titleRatingDESC")) { query += "order by title desc, rating desc\n"; }
-            else if (sortingOption.equals("ratingTitleASCE")) { query += "order by rating, title\n"; }
-            else if (sortingOption.equals("ratingTitleDESC")) { query += "order by rating desc, title desc\n"; }
-            query += "limit " + nMovies + "\n" +
-                     "offset " + Integer.parseInt(pageNumber) * Integer.parseInt(nMovies);
-            PreparedStatement statement = conn.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+                    // query to get all movies associated with genre
+                    String query = "select id, title, year, director, rating\n" +
+                            "from movies, ratings, genres_in_movies\n" +
+                            "where genres_in_movies.genreId=" + genreId + " and " +
+                            "genres_in_movies.movieId=movies.id and movies.id=ratings.movieId\n";
+                    // sorting option if wanted - if none of these selected, return rows as is from database
+                    switch (sortingOption) {
+                        case "titleRatingASCE": query += "order by title, rating\n";            break;
+                        case "titleRatingDESC": query += "order by title desc, rating desc\n";  break;
+                        case "ratingTitleASCE": query += "order by rating, title\n";            break;
+                        case "ratingTitleDESC": query += "order by rating desc, title desc\n";  break;
+                    }
+                    query += "limit " + nMovies + "\n" +
+                            // add i to current page number
+                            // the first time, i will be 0 and thus will not change the current page number since even
+                            // pages generate the current page of results and the next
+                            // second time i will be 1 - this makes this query generate the next page of results
+                            "offset " + (Integer.parseInt(pageNumber) + i) * Integer.parseInt(nMovies);
+                    PreparedStatement statement = conn.prepareStatement(query);
+                    ResultSet rs = statement.executeQuery();
 
-            while (rs.next()) {
-                // get properties for movie
-                String movieId = rs.getString("id");
-                String movieTitle = rs.getString("title");
-                String movieYear = rs.getString("year");
-                String movieDirector = rs.getString("director");
-                String movieRating = rs.getString("rating");
+                    while (rs.next()) {
+                        // get properties for movie
+                        String movieId = rs.getString("id");
+                        String movieTitle = rs.getString("title");
+                        String movieYear = rs.getString("year");
+                        String movieDirector = rs.getString("director");
+                        String movieRating = rs.getString("rating");
 
-                // query to get first 3 genres based on alphabetical order
-                String query2 = "select genres.id, name\n" +
+                        // query to get first 3 genres based on alphabetical order
+                        String query2 = "select genres.id, name\n" +
                                 "from genres_in_movies, genres\n" +
                                 "where movieId='" + movieId + "' and genres.id = genres_in_movies.genreId\n" +
                                 "order by name\n" +
                                 "limit 3";
-                PreparedStatement statement2 = conn.prepareStatement(query2);
-                ResultSet rs2 = statement2.executeQuery();
-                // query to get first 3 stars based on number of movies starred
-                String query3 = "select s.id, s.name, count(movieId) as movies\n" +
+                        PreparedStatement statement2 = conn.prepareStatement(query2);
+                        ResultSet rs2 = statement2.executeQuery();
+                        // query to get first 3 stars based on number of movies starred
+                        String query3 = "select s.id, s.name, count(movieId) as movies\n" +
                                 "from (\n" +
-                                    "select stars.id, name\n" +
-                                    "from stars_in_movies, stars\n" +
-                                    "where movieId='" + movieId + "' and stars.id = stars_in_movies.starId\n" +
-                                    "order by id\n" +
+                                "select stars.id, name\n" +
+                                "from stars_in_movies, stars\n" +
+                                "where movieId='" + movieId + "' and stars.id = stars_in_movies.starId\n" +
+                                "order by id\n" +
                                 ") as s, stars_in_movies\n" +
                                 "where s.id = stars_in_movies.starId\n" +
                                 "group by s.id\n" +
                                 "order by movies desc\n" +
                                 "limit 3";
-                PreparedStatement statement3 = conn.prepareStatement(query3);
-                ResultSet rs3 = statement3.executeQuery();
+                        PreparedStatement statement3 = conn.prepareStatement(query3);
+                        ResultSet rs3 = statement3.executeQuery();
 
-                // get ids and names of genre and stars into a string
-                String genreIds = "";
-                String genreNames = "";
-                String starIds = "";
-                String starNames = "";
-                for (int i = 0; i < 3; i++) {
-                    if (rs2.next()) {
-                        genreIds += rs2.getString("id") + ", ";
-                        genreNames += rs2.getString("name") + ", ";
+                        // get ids and names of genre and stars into a string
+                        String genreIds = "";
+                        String genreNames = "";
+                        String starIds = "";
+                        String starNames = "";
+                        for (int j = 0; j < 3; j++) {
+                            if (rs2.next()) {
+                                genreIds += rs2.getString("id") + ", ";
+                                genreNames += rs2.getString("name") + ", ";
+                            }
+                            if (rs3.next()) {
+                                starIds += rs3.getString("id") + ", ";
+                                starNames += rs3.getString("name") + ", ";
+                            }
+                        }
+                        // remove last comma and space
+                        genreIds = genreIds.substring(0, genreIds.length()-2);
+                        genreNames = genreNames.substring(0, genreNames.length()-2);
+                        starIds = starIds.substring(0, starIds.length()-2);
+                        starNames = starNames.substring(0, starNames.length()-2);
+
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("movie_id", movieId);
+                        jsonObject.addProperty("movie_title", movieTitle);
+                        jsonObject.addProperty("movie_year", movieYear);
+                        jsonObject.addProperty("movie_director", movieDirector);
+                        jsonObject.addProperty("movie_rating", movieRating);
+                        jsonObject.addProperty("genre_ids", genreIds);
+                        jsonObject.addProperty("genre_names", genreNames);
+                        jsonObject.addProperty("star_ids", starIds);
+                        jsonObject.addProperty("star_names", starNames);
+                        jsonArray.add(jsonObject);
+
+                        rs2.close();
+                        rs3.close();
+                        statement2.close();
+                        statement3.close();
                     }
-                    if (rs3.next()) {
-                        starIds += rs3.getString("id") + ", ";
-                        starNames += rs3.getString("name") + ", ";
+
+                    rs.close();
+                    statement.close();
+                    // if i = 0 meaning page is even, write the current page results
+                    if (i == 0) {
+                        response.getWriter().write(jsonArray.toString());
+                    }
+                    // if i = 1, generating the next page results so store it
+                    else {
+                        nextPageResults = jsonArray;
                     }
                 }
-                // remove last comma and space
-                genreIds = genreIds.substring(0, genreIds.length()-2);
-                genreNames = genreNames.substring(0, genreNames.length()-2);
-                starIds = starIds.substring(0, starIds.length()-2);
-                starNames = starNames.substring(0, starNames.length()-2);
-
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("movie_id", movieId);
-                jsonObject.addProperty("movie_title", movieTitle);
-                jsonObject.addProperty("movie_year", movieYear);
-                jsonObject.addProperty("movie_director", movieDirector);
-                jsonObject.addProperty("movie_rating", movieRating);
-                jsonObject.addProperty("genre_ids", genreIds);
-                jsonObject.addProperty("genre_names", genreNames);
-                jsonObject.addProperty("star_ids", starIds);
-                jsonObject.addProperty("star_names", starNames);
-                jsonArray.add(jsonObject);
-
-                rs2.close();
-                rs3.close();
-                statement2.close();
-                statement3.close();
             }
-
-            rs.close();
-            statement.close();
+            // if the next page number is larger, use nextPageResults
+            else {
+                currentPageNumber = Integer.parseInt(pageNumber);
+                response.getWriter().write(nextPageResults.toString());
+            }
             response.setStatus(200);
-            response.getWriter().write(jsonArray.toString());
+
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();

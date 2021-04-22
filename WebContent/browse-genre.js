@@ -31,10 +31,19 @@ function getParameterByName(target) {
 }
 
 
-function addSortingOption() {
+function changeSortingOption() {
     let option = document.getElementById("sortingOption").value;
-    if (option.value !== "select") {
-        location.search = location.search.replace(/sortingOption=[^&$]*/i, 'sortingOption='+option);
+    if (option !== sorting) {
+        location.search = location.search.replace(/sorting=[^&$]*/i, 'sorting='+option);
+    }
+    return false;
+}
+
+
+function changeNMovies() {
+    let option = document.getElementById("nMoviesOption").value;
+    if (option !== nMovies) {
+        location.search = location.search.replace(/nMovies=[^&$]*/i, 'nMovies='+option);
     }
     return false;
 }
@@ -47,8 +56,26 @@ function addSortingOption() {
 function handleBrowseGenreResult(resultData) {
     console.log("handleBrowseGenreResult: populating movie table from resultData");
 
+    let sortingElement = jQuery("#current_sorting");
+    console.log(sorting);
+    switch (sorting) {
+        case "default":
+            sortingElement.append("Currently sorted by Default");                                       break;
+        case "titleRatingASCE":
+            sortingElement.append("Currently sorted by Title (ascending) with Rating to break ties");   break;
+        case "titleRatingDESC":
+            sortingElement.append("Currently sorted by Title (descending) with Rating to break ties");  break;
+        case "ratingTitleASCE":
+            sortingElement.append("Currently sorted by Rating (ascending) with Title to break ties");   break;
+        case "ratingTitleDESC":
+            sortingElement.append("Currently sorted by Rating (descending) with Title to break ties");  break;
+    }
+
+    let nMoviesElement = jQuery("#current_nMovies");
+    nMoviesElement.append("Currently " + nMovies + " movies per page")
+
     // populate movie table
-    // find empty table body by id "genre_table_body"
+    // find empty table body by id "movie_table_body"
     let movieTableBodyElement = jQuery("#movie_table_body");
 
     // iterate through resultData
@@ -80,7 +107,7 @@ function handleBrowseGenreResult(resultData) {
                 '<a href="browse-genre.html?id=' + genreIdsSplit[j] +
                 '&nMovies=' + nMovies +
                 '&page=0' +
-                '&sortingOption=' + sortingOption + '">'
+                '&sorting=' + sorting + '">'
                 + genresSplit[j] + // display star_name for the link text
                 '</a>' + ", ";
         }
@@ -110,6 +137,28 @@ function handleBrowseGenreResult(resultData) {
         // append the row created to the table body, which will refresh the page
         movieTableBodyElement.append(rowHTML);
     }
+
+    console.log(page);
+    if (page !== '0') {
+        let prevPage = parseInt(page);
+        prevPage -= 1;
+        let prevButtonElement = jQuery("#prev_link");
+        let prevButtonLink = '<a href="browse-genre.html?id=' + genreId +
+            '&nMovies=' + nMovies +
+            '&page=' + prevPage +
+            '&sorting=' + sorting + '">' +
+            'Prev' + '</a>';
+        prevButtonElement.append(prevButtonLink);
+    }
+    let nextPage = parseInt(page);
+    nextPage += 1;
+    let nextButtonElement = jQuery("#next_link");
+    let nextButtonLink = '<a href="browse-genre.html?id=' + genreId +
+        '&nMovies=' + nMovies +
+        '&page=' + nextPage +
+        '&sorting=' + sorting + '">' +
+        'Next' + '</a>';
+    nextButtonElement.append(nextButtonLink);
 }
 
 
@@ -121,12 +170,12 @@ function handleBrowseGenreResult(resultData) {
 let genreId = getParameterByName("id");
 let nMovies = getParameterByName("nMovies");
 let page = getParameterByName("page");
-let sortingOption = getParameterByName("sortingOption")
+let sorting = getParameterByName("sorting")
 
 // Makes the HTTP GET request and registers on success callback function handleMovieResult
 jQuery.ajax({
     dataType: "json", // Setting return data type
     method: "GET", // Setting request method
-    url: "api/browse-genre?id=" + genreId + "&nMovies=" + nMovies + "&page=" + page + "&sortingOption=" + sortingOption, // Setting request url, which is mapped by MoviesServlet in Movies.java
+    url: "api/browse-genre?id=" + genreId + "&nMovies=" + nMovies + "&page=" + page + "&sorting=" + sorting, // Setting request url, which is mapped by MoviesServlet in Movies.java
     success: (resultData) => handleBrowseGenreResult(resultData) // Setting callback function to handle data returned successfully by the MoviesServlet
 });

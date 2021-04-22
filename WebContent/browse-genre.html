@@ -19,6 +19,13 @@
 
     <title>Browse Genre Movie List</title>
 
+    <style>
+        .leftAndRight {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+
 </head>
 <body>
 
@@ -27,7 +34,7 @@
 <br>
 
 <h2>Sorting Options</h2>
-<form id="sorting_form" method="get" onsubmit="return addSortingOption()" style='font-size: x-large'>
+<form id="sorting_form" method="get" onsubmit="return changeSortingOption()" style='font-size: x-large'>
     <select name="sortingOption" id="sortingOption">
         <option value="default">Default</option>
         <option value="titleRatingASCE">Title (ascending) with Rating to break ties</option>
@@ -37,7 +44,22 @@
     </select>
     <input type="submit" value="Sort Results">
 </form>
+<label id="current_sorting" style="font-size: x-large"></label>
+<br>
+<br>
 
+<h2>Number of Movies per Page</h2>
+<form id="nMovies_form" method="get" onsubmit="return changeNMovies()" style="font-size: x-large">
+    <select name="nMoviesOption" id="nMoviesOption">
+        <option value="10">Default - 10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>
+    <input type="submit" value="Change # of Movies">
+</form>
+<label id="current_nMovies" style="font-size: x-large"></label>
+<br>
 <br>
 
 <table id=movie_table class="table table-striped">
@@ -55,6 +77,13 @@
     </thead>
     <tbody id=movie_table_body></tbody>
 </table>
+
+<div class="leftAndRight">
+    <h2 class="align-left" id="prev_link" style="font-size: xx-large"></h2>
+    <h2 class="align-right" id="next_link" style="font-size: xx-large"></h2>
+</div>
+
+
 
 <!-- Load jQuery and Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
