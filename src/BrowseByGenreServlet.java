@@ -37,6 +37,7 @@ public class BrowseByGenreServlet extends HttpServlet {
         String genreId = request.getParameter("id");
         String nMovies = request.getParameter("nMovies");
         String pageNumber = request.getParameter("page");
+        String sortingOption = request.getParameter("sortingOption");
 
         try (Connection conn = dataSource.getConnection()) {
             JsonArray jsonArray = new JsonArray();
@@ -45,9 +46,13 @@ public class BrowseByGenreServlet extends HttpServlet {
             String query = "select id, title, year, director, rating\n" +
                     "from movies, ratings, genres_in_movies\n" +
                     "where genres_in_movies.genreId=" + genreId + " and " +
-                    "genres_in_movies.movieId=movies.id and movies.id=ratings.movieId\n" +
-                    "limit " + nMovies + "\n" +
-                    "offset " + Integer.parseInt(pageNumber) * Integer.parseInt(nMovies);
+                    "genres_in_movies.movieId=movies.id and movies.id=ratings.movieId\n";
+            if (sortingOption.equals("titleRatingASCE")) { query += "order by title, rating\n"; }
+            else if (sortingOption.equals("titleRatingDESC")) { query += "order by title desc, rating desc\n"; }
+            else if (sortingOption.equals("ratingTitleASCE")) { query += "order by rating, title\n"; }
+            else if (sortingOption.equals("ratingTitleDESC")) { query += "order by rating desc, title desc\n"; }
+            query += "limit " + nMovies + "\n" +
+                     "offset " + Integer.parseInt(pageNumber) * Integer.parseInt(nMovies);
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
 

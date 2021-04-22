@@ -31,6 +31,15 @@ function getParameterByName(target) {
 }
 
 
+function addSortingOption() {
+    let option = document.getElementById("sortingOption").value;
+    if (option.value !== "select") {
+        location.search = location.search.replace(/sortingOption=[^&$]*/i, 'sortingOption='+option);
+    }
+    return false;
+}
+
+
 /**
  * Handles the data returned by the API, read the jsonObject and populate data into html elements
  * @param resultData jsonObject
@@ -67,8 +76,8 @@ function handleBrowseGenreResult(resultData) {
         genreHTML += "<th style=\"font-size: x-large\">";
         for (let j = 0; j < genresSplit.length; j++) {
             genreHTML +=
-                // add a link to single-star.html with id passed with GET url parameter
-                '<a href="browse-genre.html?id=' + genreIdsSplit[j] + '&nMovies='+ nMovies + '&page=' + page + '">'
+                // add a link to browse-genre.html with id, nMovies, page passed with GET url parameter
+                '<a href="browse-genre.html?id=' + genreIdsSplit[j] + '&nMovies=25&page=0&sortingOption=select">'
                 + genresSplit[j] + // display star_name for the link text
                 '</a>' + ", ";
         }
@@ -109,11 +118,12 @@ function handleBrowseGenreResult(resultData) {
 let genreId = getParameterByName("id");
 let nMovies = getParameterByName("nMovies");
 let page = getParameterByName("page");
+let sortingOption = getParameterByName("sortingOption")
 
 // Makes the HTTP GET request and registers on success callback function handleMovieResult
 jQuery.ajax({
     dataType: "json", // Setting return data type
     method: "GET", // Setting request method
-    url: "api/browse-genre?id=" + genreId + "&nMovies=" + nMovies + "&page=" + page, // Setting request url, which is mapped by MoviesServlet in Movies.java
+    url: "api/browse-genre?id=" + genreId + "&nMovies=" + nMovies + "&page=" + page + "&sortingOption=" + sortingOption, // Setting request url, which is mapped by MoviesServlet in Movies.java
     success: (resultData) => handleBrowseGenreResult(resultData) // Setting callback function to handle data returned successfully by the MoviesServlet
 });

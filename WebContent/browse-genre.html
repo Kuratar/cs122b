@@ -18,11 +18,28 @@
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <title>Browse Genre Movie List</title>
+
 </head>
 <body>
 
 
 <h1>Browse by Genre Results</h1>
+<br>
+
+<h2>Sorting Options</h2>
+<form id="sorting_form" method="get" onsubmit="return addSortingOption()" style='font-size: x-large'>
+    <select name="sortingOption" id="sortingOption">
+        <option value="default">Default</option>
+        <option value="titleRatingASCE">Title (ascending) with Rating to break ties</option>
+        <option value="titleRatingDESC">Title (descending) with Rating to break ties</option>
+        <option value="ratingTitleASCE">Rating (ascending) with Title to break ties</option>
+        <option value="ratingTitleDESC">Rating (descending) with Title to break ties</option>
+    </select>
+    <input type="submit" value="Sort Results">
+</form>
+
+<br>
+
 <table id=movie_table class="table table-striped">
     <!-- table header -->
     <thead>

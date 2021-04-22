@@ -28,7 +28,8 @@ function handleGenresResult(resultData) {
         rowHTML +=
             "<th style='font-size: x-large'>" +
             // add a link to browse-genre.html with id passed with GET url parameter
-            '<a href="browse-genre.html?id=' + resultData[i]['genre_id'] + '&nMovies=25&page=0">'
+            '<a href="browse-genre.html?id=' + resultData[i]['genre_id'] +
+            '&nMovies=25&page=0&sortingOption=default">'
             + resultData[i]["genre_name"] + // display genre_name for the link text
             '</a>' +
             "</th>";
