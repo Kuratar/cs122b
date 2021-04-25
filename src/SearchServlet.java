@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -25,10 +26,20 @@ import java.sql.Statement;
 public class SearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    private String currentNMovies;
+    private String currentPageNumber;
+    private String currentSortingOption;
+    // holds the next page of results
+    private JsonArray nextPageResults;
+
     // Create a dataSource which registered in web.xml
     private DataSource dataSource;
 
     public void init(ServletConfig config) {
+        // initialize current page number to 0 for first call of class
+        currentNMovies = "";
+        currentPageNumber = "";
+        currentSortingOption = "";
         try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
         } catch (NamingException e) {
@@ -36,34 +47,11 @@ public class SearchServlet extends HttpServlet {
         }
     }
 
-    // Use http GET
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-
-        //response.setContentType("application/json");    // Response mime type
-
-        PrintWriter out = response.getWriter();
-        String title = request.getParameter("title");
-        System.out.println(title);
-        String year = request.getParameter("year");
-        System.out.println(year);
-        String director = request.getParameter("director");
-        System.out.println(director);
-        String star = request.getParameter("star");
-        System.out.println(star);
-
-
+    private JsonArray generateResults(PrintWriter out, HttpServletResponse response, Connection dbCon,
+                                      String title, String year, String director, String star,
+                                      String nMovies, String pageNumber, String sortingOption)
+    throws IOException {
         try {
-
-            // Create a new connection to database
-            Connection dbCon = dataSource.getConnection();
-
-            // Declare a new statement
-            Statement statement = dbCon.createStatement();
-
-            // Retrieve parameter "name" from the http request, which refers to the value of <input name="name"> in index.html
-
-
             // Generate a SQL query
             String query = "SELECT movies.id, title, year, director, rating from ratings, movies";
 
@@ -83,7 +71,7 @@ public class SearchServlet extends HttpServlet {
                 {
                     query += " and ";
                 }
-                 query+= "title like '%" + title + "%'";
+                query+= "title like '%" + title + "%'";
             }
             if (!year.isEmpty())
             {
@@ -109,11 +97,25 @@ public class SearchServlet extends HttpServlet {
                 }
                 query += "director like '%" + director + "%'";
             }
-            query += " and ratings.movieId = movies.id";
+            query += " and ratings.movieId = movies.id\n";
+            // sorting option if wanted - if none of these selected, return rows as is from database
+            switch (sortingOption) {
+                case "titleRatingASCE": query += "order by title, rating\n";            break;
+                case "titleRatingDESC": query += "order by title desc, rating desc\n";  break;
+                case "ratingTitleASCE": query += "order by rating, title\n";            break;
+                case "ratingTitleDESC": query += "order by rating desc, title desc\n";  break;
+            }
+            query += "limit " + nMovies + "\n" +
+                    // add i to current page number
+                    // the first time, i will be 0 and thus will not change the current page number since even
+                    // pages generate the current page of results and the next
+                    // second time i will be 1 - this makes this query generate the next page of results
+                    "offset " + Integer.parseInt(pageNumber) * Integer.parseInt(nMovies);
             System.out.println(query);
 
             // Perform the query
-            ResultSet rs = statement.executeQuery(query);
+            PreparedStatement statement = dbCon.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 
@@ -134,7 +136,6 @@ public class SearchServlet extends HttpServlet {
                 jsonObject.addProperty("movie_director", movie_director);
                 jsonObject.addProperty("movie_rating", movie_rating);
 
-
                 jsonArray.add(jsonObject);
             }
             for (int i = 0; i<jsonArray.size(); i++)
@@ -143,9 +144,11 @@ public class SearchServlet extends HttpServlet {
                 String query2 = "select stars.id, name\n" +
                         "from stars_in_movies, stars\n" +
                         "where movieId=" + movie.get("movie_id") + " and stars.id = stars_in_movies.starId\n" +
+                        "order by name\n" +
                         "limit 3"; //query 2
 
-                ResultSet rstemp = statement.executeQuery(query2); //Another resultset to execute 2nd query
+                PreparedStatement statement2 = dbCon.prepareStatement(query2);
+                ResultSet rstemp = statement2.executeQuery(); //Another resultset to execute 2nd query
                 String stars = "";
                 String starIds = "";
                 while (rstemp.next())
@@ -165,12 +168,20 @@ public class SearchServlet extends HttpServlet {
             for (int i = 0; i<jsonArray.size(); i++)
             {
                 JsonObject movie = jsonArray.get(i).getAsJsonObject();
-                String query3 = "select genres.id, name\n" +
-                        "from genres_in_movies, genres\n" +
-                        "where movieId=" + movie.get("movie_id") + " and genres.id = genres_in_movies.genreId\n" +
+                String query3 = "select s.id, s.name, count(movieId) as movies\n" +
+                        "from (\n" +
+                        "select stars.id, name\n" +
+                        "from stars_in_movies, stars\n" +
+                        "where movieId=" + movie.get("movie_id") + " and stars.id = stars_in_movies.starId\n" +
+                        "order by id\n" +
+                        ") as s, stars_in_movies\n" +
+                        "where s.id = stars_in_movies.starId\n" +
+                        "group by s.id\n" +
+                        "order by movies desc\n" +
                         "limit 3";
 
-                ResultSet rstemp = statement.executeQuery(query3);
+                PreparedStatement statement3 = dbCon.prepareStatement(query3);
+                ResultSet rstemp = statement3.executeQuery();
                 String genres = "";
                 String genreIDs = "";
                 while (rstemp.next())
@@ -185,16 +196,89 @@ public class SearchServlet extends HttpServlet {
                 rstemp.close();
             }
 
-
             rs.close();
             statement.close();
+            return jsonArray;
+        } catch (Exception e) {
+            // write error message JSON object to output
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("errorMessage", e.getMessage());
+            out.write(jsonObject.toString());
 
-            // write JSON string to output
-            out.write(jsonArray.toString());
-            // set response status to 200 (OK)
+            // set response status to 500 (Internal Server Error)
+            response.setStatus(500);
+        }
+        JsonArray emptyArray = new JsonArray();
+        return emptyArray;
+    }
+
+    // Use http GET
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        //response.setContentType("application/json");    // Response mime type
+
+        PrintWriter out = response.getWriter();
+        String title = request.getParameter("title");
+        System.out.println(title);
+        String year = request.getParameter("year");
+        System.out.println(year);
+        String director = request.getParameter("director");
+        System.out.println(director);
+        String star = request.getParameter("star");
+        System.out.println(star);
+        String nMovies = request.getParameter("nMovies");
+        System.out.println(nMovies);
+        String pageNumber = request.getParameter("page");
+        System.out.println(pageNumber);
+        String sortingOption = request.getParameter("sorting");
+        System.out.println(sortingOption);
+
+        try (Connection dbCon = dataSource.getConnection()) {
+            // Create a new connection to database
+
+            // if the page is an even number, always generate the current page of results and the next
+            if (Integer.parseInt(pageNumber) % 2 == 0) {
+                JsonArray jsonArray = generateResults(out, response, dbCon,
+                                                      title, year, director, star,
+                                                      nMovies, pageNumber, sortingOption);
+                out.write(jsonArray.toString());
+                JsonArray nextPageArray = generateResults(out, response, dbCon,
+                        title, year, director, star,
+                        nMovies, Integer.toString(Integer.parseInt(pageNumber)+1), sortingOption);
+                currentNMovies = nMovies;
+                currentPageNumber = pageNumber;
+                currentSortingOption = sortingOption;
+                nextPageResults = nextPageArray;
+            }
+            // if the page number is an odd number
+            else if (Integer.parseInt(pageNumber) % 2 == 1) {
+                // if the page number is the next page,
+                if (Integer.parseInt(pageNumber) == Integer.parseInt(currentPageNumber)+1) {
+                    // if the settings are not the same, generate new nextPageResults and send
+                    if (!currentNMovies.equals(nMovies) || !currentSortingOption.equals(sortingOption)) {
+                        nextPageResults = generateResults(out, response, dbCon,
+                                                          title, year, director, star,
+                                                          nMovies, pageNumber, sortingOption);
+                        currentNMovies = nMovies;
+                        currentSortingOption = sortingOption;
+                    }
+                    // statement reached if settings are same thus send nextPage
+                    currentPageNumber = pageNumber;
+                    out.write(nextPageResults.toString());
+                }
+                // if the page number is not the next page, generate results for previous page and send
+                else {
+                    JsonArray previousPageResults = generateResults(out, response, dbCon,
+                                                                    title, year, director, star,
+                                                                    nMovies, pageNumber, sortingOption);
+                    currentNMovies = nMovies;
+                    currentSortingOption = sortingOption;
+                    currentPageNumber = pageNumber;
+                    out.write(previousPageResults.toString());
+                }
+            }
             response.setStatus(200);
-
-
         } catch (Exception e) {
 
             // write error message JSON object to output
