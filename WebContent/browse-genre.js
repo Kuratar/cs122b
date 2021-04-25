@@ -54,6 +54,14 @@ function changeNMovies() {
  * @param resultData jsonObject
  */
 function handleBrowseGenreResult(resultData) {
+    if (resultData.length === 0) {
+        let noMoreMoviesElementTop = jQuery("#no_more_movies_top");
+        let noMoreMoviesElementBot = jQuery("#no_more_movies_bot");
+        noMoreMoviesElementTop.append("No more movies");
+        noMoreMoviesElementBot.append("No more movies");
+        return;
+    }
+
     console.log("handleBrowseGenreResult: populating movie table from resultData");
 
     let sortingElement = jQuery("#current_sorting");
@@ -138,27 +146,36 @@ function handleBrowseGenreResult(resultData) {
         movieTableBodyElement.append(rowHTML);
     }
 
-    console.log(page);
+    // page does not equal 0, add prev button
     if (page !== '0') {
         let prevPage = parseInt(page);
         prevPage -= 1;
-        let prevButtonElement = jQuery("#prev_link");
+        let prevButtonElementTop = jQuery("#prev_link_top");
+        let prevButtonElementBot = jQuery("#prev_link_bot");
         let prevButtonLink = '<a href="browse-genre.html?id=' + genreId +
             '&nMovies=' + nMovies +
             '&page=' + prevPage +
             '&sorting=' + sorting + '">' +
             'Prev' + '</a>';
-        prevButtonElement.append(prevButtonLink);
+        prevButtonElementTop.append(prevButtonLink);
+        prevButtonElementBot.append(prevButtonLink);
     }
-    let nextPage = parseInt(page);
-    nextPage += 1;
-    let nextButtonElement = jQuery("#next_link");
-    let nextButtonLink = '<a href="browse-genre.html?id=' + genreId +
-        '&nMovies=' + nMovies +
-        '&page=' + nextPage +
-        '&sorting=' + sorting + '">' +
-        'Next' + '</a>';
-    nextButtonElement.append(nextButtonLink);
+    // if page has # of movies = to nMovies, add next button
+    console.log(nMovies);
+    console.log(resultData.length);
+    if (resultData.length === parseInt(nMovies)) {
+        let nextPage = parseInt(page);
+        nextPage += 1;
+        let nextButtonElementTop = jQuery("#next_link_top");
+        let nextButtonElementBot = jQuery("#next_link_bot");
+        let nextButtonLink = '<a href="browse-genre.html?id=' + genreId +
+            '&nMovies=' + nMovies +
+            '&page=' + nextPage +
+            '&sorting=' + sorting + '">' +
+            'Next' + '</a>';
+        nextButtonElementTop.append(nextButtonLink);
+        nextButtonElementBot.append(nextButtonLink);
+    }
 }
 
 
