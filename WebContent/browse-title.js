@@ -95,7 +95,12 @@ function handleBrowseTitleResult(resultData) {
         rowHTML +=
             "<th style=\"font-size: x-large\">" +
             // add a link to single-movie.html with id passed with GET url parameter
-            '<a href="single-movie.html?id=' + resultData[i]['movie_id'] + '">'
+            '<a href="single-movie.html?id=' + resultData[i]['movie_id'] +
+            '&list=browseTitle' +
+            '&char=' + char +
+            '&nMovies=' + nMovies +
+            '&page=' + page +
+            '&sorting=' + sorting + '">'
             + resultData[i]["movie_title"] + // display movie_name for the link text
             '</a>' +
             "</th>";
@@ -130,7 +135,12 @@ function handleBrowseTitleResult(resultData) {
         for (let j = 0; j < starsSplit.length; j++) {
             starHTML +=
                 // add a link to single-star.html with id passed with GET url parameter
-                '<a href="single-star.html?id=' + starsIdsSplit[j] + '">'
+                '<a href="single-star.html?id=' + starsIdsSplit[j] +
+                '&list=browseTitle' +
+                '&char=' + char +
+                '&nMovies=' + nMovies +
+                '&page=' + page +
+                '&sorting=' + sorting + '">'
                 + starsSplit[j] + // display star_name for the link text
                 '</a>' + ", ";
         }

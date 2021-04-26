@@ -62,7 +62,8 @@ public class SingleStarServlet extends HttpServlet {
             String query2 = "select id, title, director, year\n" +
                     "from movies, stars_in_movies\n" +
                     "where stars_in_movies.starId='" + id + "' and " +
-                    "stars_in_movies.movieId = movies.id";
+                    "stars_in_movies.movieId = movies.id\n" +
+                    "order by year desc, title";
             PreparedStatement statement2 = conn.prepareStatement(query2);
             ResultSet rs2 = statement2.executeQuery();
 
@@ -70,7 +71,10 @@ public class SingleStarServlet extends HttpServlet {
 
             rs.next();
             String starName = rs.getString("name");
-            String starDob = rs.getString("birthYear");
+            String starDob = "";
+            if (rs.getString("birthYear") == null) { starDob = "Not known"; }
+            else { starDob = rs.getString("birthYear"); }
+
             // Iterate through each row of rs2
             while (rs2.next()) {
 
