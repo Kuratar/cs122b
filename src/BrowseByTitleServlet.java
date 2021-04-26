@@ -14,8 +14,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 
-@WebServlet(name = "BrowseByGenreServlet", urlPatterns = "/api/browse-genre")
-public class BrowseByGenreServlet extends HttpServlet {
+@WebServlet(name = "BrowseByTitleServlet", urlPatterns = "/api/browse-title")
+public class BrowseByTitleServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private String currentNMovies;
@@ -41,17 +41,27 @@ public class BrowseByGenreServlet extends HttpServlet {
     }
 
     private JsonArray generateResults(HttpServletResponse response, Connection conn,
-                                      String genreId, String nMovies, String pageNumber, String sortingOption)
-    throws IOException {
+                                      String firstChar, String nMovies, String pageNumber, String sortingOption)
+    throws  IOException {
         try {
             JsonArray jsonArray = new JsonArray();
 
-            // query to get all movies associated with genre
-            String query = "select id, title, year, director, rating\n" +
-                    "from movies, ratings, genres_in_movies\n" +
-                    "where genres_in_movies.genreId=" + genreId + " and " +
-                    "genres_in_movies.movieId=movies.id and movies.id=ratings.movieId\n";
-            // sorting option if wanted - if none of these selected, return rows as is from database
+            // if first character is asterisk
+            String query = "";
+            if (firstChar.equals("*")) {
+                // use this query to get all non alphanumeric characters
+                query = "SELECT movies.id, title, year, director, rating \n" +
+                        "from ratings, movies \n" +
+                        "where title regexp '^[^a-zA-Z0-9].*' and ratings.movieId = movies.id\n";
+            }
+            // other wise
+            else {
+                // add first character normally to string query
+                query = "SELECT movies.id, title, year, director, rating \n" +
+                        "from ratings, movies \n" +
+                        "where title like '" + firstChar + "%' and " +
+                        "ratings.movieId = movies.id\n";
+            }
             switch (sortingOption) {
                 case "titleRatingASCE": query += "order by title, rating\n";            break;
                 case "titleRatingDESC": query += "order by title desc, rating\n";  break;
@@ -159,7 +169,7 @@ public class BrowseByGenreServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json; charset=utf-8");
 
-        String genreId = request.getParameter("id");
+        String firstChar = request.getParameter("char");
         String nMovies = request.getParameter("nMovies");
         String pageNumber = request.getParameter("page");
         String sortingOption = request.getParameter("sorting");
@@ -167,9 +177,9 @@ public class BrowseByGenreServlet extends HttpServlet {
         try (Connection conn = dataSource.getConnection()) {
             // if the page is an even number, always generate the current page of results and the next
             if (Integer.parseInt(pageNumber) % 2 == 0) {
-                JsonArray jsonArray = generateResults(response, conn, genreId, nMovies, pageNumber, sortingOption);
+                JsonArray jsonArray = generateResults(response, conn, firstChar, nMovies, pageNumber, sortingOption);
                 response.getWriter().write(jsonArray.toString());
-                JsonArray nextPageArray = generateResults(response, conn, genreId, nMovies, Integer.toString(Integer.parseInt(pageNumber)+1), sortingOption);
+                JsonArray nextPageArray = generateResults(response, conn, firstChar, nMovies, Integer.toString(Integer.parseInt(pageNumber)+1), sortingOption);
                 currentNMovies = nMovies;
                 currentPageNumber = pageNumber;
                 currentSortingOption = sortingOption;
@@ -181,7 +191,7 @@ public class BrowseByGenreServlet extends HttpServlet {
                 if (Integer.parseInt(pageNumber) == Integer.parseInt(currentPageNumber)+1) {
                     // if the settings are not the same, generate new nextPageResults and send
                     if (!currentNMovies.equals(nMovies) || !currentSortingOption.equals(sortingOption)) {
-                        nextPageResults = generateResults(response, conn, genreId, nMovies, pageNumber, sortingOption);
+                        nextPageResults = generateResults(response, conn, firstChar, nMovies, pageNumber, sortingOption);
                         currentNMovies = nMovies;
                         currentSortingOption = sortingOption;
                     }
@@ -191,7 +201,7 @@ public class BrowseByGenreServlet extends HttpServlet {
                 }
                 // if the page number is not the next page, generate results for previous page and send
                 else {
-                    JsonArray previousPageResults = generateResults(response, conn, genreId, nMovies, pageNumber, sortingOption);
+                    JsonArray previousPageResults = generateResults(response, conn, firstChar, nMovies, pageNumber, sortingOption);
                     currentNMovies = nMovies;
                     currentSortingOption = sortingOption;
                     currentPageNumber = pageNumber;

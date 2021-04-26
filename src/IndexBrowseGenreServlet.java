@@ -33,6 +33,8 @@ public class IndexBrowseGenreServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json; charset=utf-8");
+
         JsonArray jsonArray = new JsonArray();
 
         try (Connection conn = dataSource.getConnection()) {

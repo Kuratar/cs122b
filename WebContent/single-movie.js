@@ -50,13 +50,35 @@ function handleResult(resultData) {
 
     // populate the movie info h3
     // find the empty h3 body by id "movie_info"
-    let movieInfoElement = jQuery("#star_info");
+    let movieInfoElement = jQuery("#movie_info");
+
+    let genreIds = resultData[0]["movie_genreIds"];
+    let genreNames = resultData[0]["movie_genreNames"];
+    console.log(genreIds);
+    console.log(genreNames);
+    let genreIdsSplit = genreIds.split(", ");
+    let genreNamesSplit = genreNames.split(", ");
+    console.log(genreIdsSplit);
+    console.log(genreNamesSplit);
+    let genreHTML = "<p>Genre(s): ";
+    for (let i = 0; i < genreIdsSplit.length; i++) {
+        genreHTML +=
+            // add a link to browse-genre.html with id, nMovies, page passed with GET url parameter
+            '<a href="browse-genre.html?id=' + genreIdsSplit[i] +
+            '&nMovies=' + nMovies +
+            '&page=0' +
+            '&sorting=' + sortingOption + '">' +
+            genreNamesSplit[i] + // display star_name for the link text
+            '</a>' + ", ";
+    }
+    genreHTML = genreHTML.slice(0, -2);
+    genreHTML += "</p>";
 
     // append two html <p> created to the h3 body, which will refresh the page
     movieInfoElement.append("<p>Movie Title: " + resultData[0]["movie_title"] + "</p>" +
         "<p>Release Year: " + resultData[0]["movie_year"] + "</p>" +
         "<p>Director: " + resultData[0]["movie_director"] + "</p>" +
-        "<p>Genres: " + resultData[0]["movie_genres"] + "</p>" +
+        genreHTML +
         "<p>Rating: " + resultData[0]["movie_rating"] + "</p>");
 
     console.log("handleResult: populating movie table from resultData");
@@ -74,9 +96,14 @@ function handleResult(resultData) {
         let rowHTML = "";
         rowHTML += "<tr>";
         rowHTML +=
-            "<th>" +
+            "<th style='font-size: x-large'>" +
             // add a link to single-star.html with id passed with GET url parameter
-            '<a href="single-star.html?id=' + starIdsSplit[i] + '">'
+            '<a href="single-star.html?id=' + starIdsSplit[i] +
+            '&list=' + movieListType +
+            '&genreId=' + genreId +
+            '&nMovies=' + nMovies +
+            '&page=' + page +
+            '&sorting=' + sortingOption + '">'
             + starNamesSplit[i] + // display star_name for the link text
             '</a>' +
             "</th>";
@@ -84,7 +111,35 @@ function handleResult(resultData) {
         // Append the row created to the table body, which will refresh the page
         movieTableBodyElement.append(rowHTML);
     }
-    movieTableBodyElement.append("<p>" + '<a href="index.html">' + "Back" + '</a>' + "</p>");
+
+    // create back button to movie list
+    let backMovieListElement = jQuery("#back_movie_list");
+    switch (movieListType) {
+        case "search":
+            backMovieListElement.append('<a href="search.html?title=' + title +
+                '&year=' + year +
+                '&director=' + director +
+                '&star=' + star +
+                '&nMovies=' + nMovies +
+                '&page=' + page +
+                '&sorting=' + sortingOption + '">' +
+                'Back to Movie List' + '</a>')
+            break;
+        case "browseGenre":
+            backMovieListElement.append('<a href="browse-genre.html?id=' + genreId +
+                '&nMovies=' + nMovies +
+                '&page=' + page +
+                '&sorting=' + sortingOption + '">' +
+                'Back to Movie List' + '</a>')
+            break;
+        case "browseTitle":
+            backMovieListElement.append('<a href="browse-title.html?char=' + char +
+                '&nMovies=' + nMovies +
+                '&page=' + page +
+                '&sorting=' + sortingOption + '">' +
+                'Back to Movie List' + '</a>')
+            break;
+    }
 }
 
 /**
@@ -93,11 +148,46 @@ function handleResult(resultData) {
 
 // Get id from URL
 let movieId = getParameterByName('id');
+let movieListType = getParameterByName('list');
+let nMovies = getParameterByName('nMovies');
+let page = getParameterByName('page');
+let sortingOption = getParameterByName('sorting');
+// possible movie list parameters
+let title = getParameterByName('title');
+let year = getParameterByName('year');
+let director = getParameterByName('director');
+let star = getParameterByName('star');
+let genreId = getParameterByName('genreId');
+let char = getParameterByName('char');
 
-// Makes the HTTP GET request and registers on success callback function handleResult
-jQuery.ajax({
-    dataType: "json",  // Setting return data type
-    method: "GET",// Setting request method
-    url: "api/single-movie?id=" + movieId, // Setting request url, which is mapped by MoviesServlet in Movies.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleMovieServlet
-});
+if (movieListType === "search") {
+    // Makes the HTTP GET request and registers on success callback function handleResult
+    jQuery.ajax({
+        dataType: "json",  // Setting return data type
+        method: "GET",// Setting request method
+        url: "api/single-movie?id=" + movieId + "&list=" + movieListType +
+            "&title=" + title + "&year=" + year + "&director=" + director + "&star=" + star +
+            "&nMovies=" + nMovies + "&page=" + page + "&sorting=" + sortingOption, // Setting request url, which is mapped by MoviesServlet in Movies.java
+        success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleMovieServlet
+    });
+}
+else if (movieListType === "browseGenre") {
+    // Makes the HTTP GET request and registers on success callback function handleResult
+    jQuery.ajax({
+        dataType: "json",  // Setting return data type
+        method: "GET",// Setting request method
+        url: "api/single-movie?id=" + movieId + "&list=" + movieListType + "&genreId=" + genreId +
+            "&nMovies=" + nMovies + "&page=" + page + "&sorting=" + sortingOption, // Setting request url, which is mapped by MoviesServlet in Movies.java
+        success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleMovieServlet
+    });
+}
+else if (movieListType === "browseTitle") {
+    // Makes the HTTP GET request and registers on success callback function handleResult
+    jQuery.ajax({
+        dataType: "json",  // Setting return data type
+        method: "GET",// Setting request method
+        url: "api/single-movie?id=" + movieId + "&list=" + movieListType + "&char=" + char +
+            "&nMovies=" + nMovies + "&page=" + page + "&sorting=" + sortingOption, // Setting request url, which is mapped by MoviesServlet in Movies.java
+        success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleMovieServlet
+    });
+}

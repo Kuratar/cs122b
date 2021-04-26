@@ -8,7 +8,7 @@
  *      2. Populate the data to correct html elements.
  */
 
-let search_form = $("#search_form");
+
 /**
  * Handles the data returned by the API, read the jsonObject and populate data into html elements
  * @param resultData jsonObject
@@ -101,7 +101,15 @@ function handleSearchResult(resultData) {
         rowHTML +=
             "<th style=\"font-size: x-large\">" +
             // add a link to single-movie.html with id passed with GET url parameter
-            '<a href="single-movie.html?id=' + resultData[i]['movie_id'] + '">'
+            '<a href="single-movie.html?id=' + resultData[i]['movie_id'] +
+            '&list=search' +
+            '&title=' + title +
+            '&year=' + year +
+            '&director=' + director +
+            '&star=' + star +
+            '&nMovies=' + nMovies +
+            '&page=' + page +
+            '&sorting=' + sorting + '">'
             + resultData[i]["movie_title"] + // display movie_name for the link text
             '</a>' +
             "</th>";
@@ -134,7 +142,15 @@ function handleSearchResult(resultData) {
         for (let j = 0; j < starsSplit.length; j++) {
             starHTML +=
                 // add a link to single-star.html with id passed with GET url parameter
-                '<a href="single-star.html?id=' + starsIdsSplit[j] + '">'
+                '<a href="single-star.html?id=' + starsIdsSplit[j] +
+                '&list=search' +
+                '&title=' + title +
+                '&year=' + year +
+                '&director=' + director +
+                '&star=' + star +
+                '&nMovies=' + nMovies +
+                '&page=' + page +
+                '&sorting=' + sorting + '">'
                 + starsSplit[j] + // display star_name for the link text
                 '</a>' + ", ";
         }
@@ -191,7 +207,6 @@ function handleSearchResult(resultData) {
 // the default parameters nMovies, page, and sorting only if they are not there
 // these parameters are not included initially when redirected from main page (index.html)
 // which is where users first initially enter search keywords
-//search_form.submit(addDefaultParameters);
 
 let title = getParameterByName("title");
 let year = getParameterByName("year");

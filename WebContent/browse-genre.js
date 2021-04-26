@@ -65,7 +65,6 @@ function handleBrowseGenreResult(resultData) {
     console.log("handleBrowseGenreResult: populating movie table from resultData");
 
     let sortingElement = jQuery("#current_sorting");
-    console.log(sorting);
     switch (sorting) {
         case "default":
             sortingElement.append("Currently sorted by Default");                                       break;
@@ -96,7 +95,12 @@ function handleBrowseGenreResult(resultData) {
         rowHTML +=
             "<th style=\"font-size: x-large\">" +
             // add a link to single-movie.html with id passed with GET url parameter
-            '<a href="single-movie.html?id=' + resultData[i]['movie_id'] + '">'
+            '<a href="single-movie.html?id=' + resultData[i]['movie_id'] +
+            '&list=browseGenre' +
+            '&genreId=' + genreId +
+            '&nMovies=' + nMovies +
+            '&page=' + page +
+            '&sorting=' + sorting + '">'
             + resultData[i]["movie_title"] + // display movie_name for the link text
             '</a>' +
             "</th>";
@@ -131,7 +135,12 @@ function handleBrowseGenreResult(resultData) {
         for (let j = 0; j < starsSplit.length; j++) {
             starHTML +=
                 // add a link to single-star.html with id passed with GET url parameter
-                '<a href="single-star.html?id=' + starsIdsSplit[j] + '">'
+                '<a href="single-star.html?id=' + starsIdsSplit[j] +
+                '&list=browseGenre' +
+                '&genreId=' + genreId +
+                '&nMovies=' + nMovies +
+                '&page=' + page +
+                '&sorting=' + sorting + '">'
                 + starsSplit[j] + // display star_name for the link text
                 '</a>' + ", ";
         }
@@ -161,8 +170,6 @@ function handleBrowseGenreResult(resultData) {
         prevButtonElementBot.append(prevButtonLink);
     }
     // if page has # of movies = to nMovies, add next button
-    console.log(nMovies);
-    console.log(resultData.length);
     if (resultData.length === parseInt(nMovies)) {
         let nextPage = parseInt(page);
         nextPage += 1;

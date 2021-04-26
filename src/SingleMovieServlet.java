@@ -39,7 +39,7 @@ public class SingleMovieServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=utf-8");
         String id = request.getParameter("id");
         PrintWriter out = response.getWriter();
 
@@ -53,16 +53,23 @@ public class SingleMovieServlet extends HttpServlet {
                         "ratings.movieId='" + id + "'";
                 PreparedStatement statement = conn.prepareStatement(query);
                 ResultSet rs = statement.executeQuery();
-                String query2 = "select name\n" +
+                String query2 = "select genres.id, name\n" +
                         "from genres_in_movies, genres\n" +
                         "where movieId='" + id + "' and " +
-                        "genres.id = genres_in_movies.genreId";
+                        "genres.id = genres_in_movies.genreId\n" +
+                        "order by name";
                 PreparedStatement statement2 = conn.prepareStatement(query2);
                 ResultSet rs2 = statement2.executeQuery();
-                String query3 = "select stars.id, name\n" +
+                String query3 = "select s.id, s.name, count(movieId) as movies\n" +
+                        "from (\n" +
+                        "select stars.id, name\n" +
                         "from stars_in_movies, stars\n" +
-                        "where movieId='" + id + "' and " +
-                        "stars.id = stars_in_movies.starId;";
+                        "where movieId='" + id + "' and stars.id = stars_in_movies.starId\n" +
+                        "order by id\n" +
+                        ") as s, stars_in_movies\n" +
+                        "where s.id = stars_in_movies.starId\n" +
+                        "group by s.id\n" +
+                        "order by movies desc";
                 PreparedStatement statement3 = conn.prepareStatement(query3);
                 ResultSet rs3 = statement3.executeQuery();
                 JsonArray jsonArray = new JsonArray();
@@ -81,16 +88,19 @@ public class SingleMovieServlet extends HttpServlet {
                     String rating = rs.getString("rating");
 
                     // get all the genres from the query results
-                    String genres = "";
+                    String genreIds = "";
+                    String genreNames = "";
                     while (true) {
                         if (!rs2.next()) {
                             // get rid of last comma and space
-                            genres = genres.substring(0, genres.length()-2);
+                            genreIds = genreIds.substring(0, genreIds.length()-2);
+                            genreNames = genreNames.substring(0, genreNames.length()-2);
                             rs2.close();
                             statement2.close();
                             break;
                         }
-                        genres += rs2.getString("name") + ", ";
+                        genreIds += rs2.getString("id") + ", ";
+                        genreNames += rs2.getString("name") + ", ";
                     }
 
                     // get all the stars from the query results
@@ -114,7 +124,8 @@ public class SingleMovieServlet extends HttpServlet {
                     jsonObject.addProperty("movie_year", year);
                     jsonObject.addProperty("movie_director", director);
                     jsonObject.addProperty("movie_rating", rating);
-                    jsonObject.addProperty("movie_genres", genres);
+                    jsonObject.addProperty("movie_genreIds", genreIds);
+                    jsonObject.addProperty("movie_genreNames", genreNames);
                     jsonObject.addProperty("movie_starIds", starIds);
                     jsonObject.addProperty("movie_starNames", starNames);
                     jsonArray.add(jsonObject);
