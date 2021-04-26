@@ -101,9 +101,9 @@ public class SearchServlet extends HttpServlet {
             // sorting option if wanted - if none of these selected, return rows as is from database
             switch (sortingOption) {
                 case "titleRatingASCE": query += "order by title, rating\n";            break;
-                case "titleRatingDESC": query += "order by title desc, rating desc\n";  break;
+                case "titleRatingDESC": query += "order by title desc, rating\n";  break;
                 case "ratingTitleASCE": query += "order by rating, title\n";            break;
-                case "ratingTitleDESC": query += "order by rating desc, title desc\n";  break;
+                case "ratingTitleDESC": query += "order by rating desc, title\n";  break;
             }
             query += "limit " + nMovies + "\n" +
                     // add i to current page number
