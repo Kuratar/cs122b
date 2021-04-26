@@ -15,6 +15,14 @@
  * @param target String
  * @returns {*}
  */
+function addToShoppingCart()
+{
+    console.log("Added movie to shopping cart");
+    $.ajax("api/cart", {
+        method: "POST",
+        data: {id: getParameterByName('id')},
+    });
+}
 function getParameterByName(target) {
     // Get request URL
     let url = window.location.href;
