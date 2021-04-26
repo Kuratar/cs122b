@@ -65,7 +65,6 @@ function handleBrowseGenreResult(resultData) {
     console.log("handleBrowseGenreResult: populating movie table from resultData");
 
     let sortingElement = jQuery("#current_sorting");
-    console.log(sorting);
     switch (sorting) {
         case "default":
             sortingElement.append("Currently sorted by Default");                                       break;
