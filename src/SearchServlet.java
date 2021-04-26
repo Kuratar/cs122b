@@ -215,8 +215,7 @@ public class SearchServlet extends HttpServlet {
     // Use http GET
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-
-        //response.setContentType("application/json");    // Response mime type
+        response.setContentType("application/json; charset=utf-8");    // Response mime type
 
         PrintWriter out = response.getWriter();
         String title = request.getParameter("title");

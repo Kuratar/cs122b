@@ -39,7 +39,7 @@ public class SingleMovieServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=utf-8");
         String id = request.getParameter("id");
         PrintWriter out = response.getWriter();
 
