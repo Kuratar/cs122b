@@ -8,7 +8,7 @@
  *      2. Populate the data to correct html elements.
  */
 
-let search_form = $("#search_form");
+
 /**
  * Handles the data returned by the API, read the jsonObject and populate data into html elements
  * @param resultData jsonObject
@@ -191,7 +191,6 @@ function handleSearchResult(resultData) {
 // the default parameters nMovies, page, and sorting only if they are not there
 // these parameters are not included initially when redirected from main page (index.html)
 // which is where users first initially enter search keywords
-//search_form.submit(addDefaultParameters);
 
 let title = getParameterByName("title");
 let year = getParameterByName("year");
