@@ -59,8 +59,9 @@ function handleTitles() {
         rowHTML +=
             "<th style='font-size: x-large'>" +
             // add a link to browse-title.html with id passed with GET url parameter
-            '<a href="browse-title.html?char=' + firstChars[i] + '&nMovies=10">'
-            + firstChars[i] + // display char for the link text
+            '<a href="browse-title.html?char=' + firstChars[i] +
+            '&nMovies=10&page=0&sorting=default">' +
+            firstChars[i] + // display char for the link text
             '</a>' +
             "</th>";
         rowHTML += "</tr>";
@@ -75,7 +76,8 @@ function handleTitles() {
     lastRowHTML +=
         "<th style='font-size: x-large'>" +
         // add a link to browse-title.html with id passed with GET url parameter
-        '<a href="browse-title.html?char=' + '*' + '&nMovies=10">' +
+        '<a href="browse-title.html?char=' + '*' +
+        '&nMovies=10&page=0&sorting=default">' +
         "* (Non-alphanumerical characters)" +
         '</a>' +
         "</th>";

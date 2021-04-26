@@ -161,8 +161,7 @@ function handleBrowseGenreResult(resultData) {
         prevButtonElementBot.append(prevButtonLink);
     }
     // if page has # of movies = to nMovies, add next button
-    console.log(nMovies);
-    console.log(resultData.length);
+
     if (resultData.length === parseInt(nMovies)) {
         let nextPage = parseInt(page);
         nextPage += 1;
