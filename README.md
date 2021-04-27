@@ -10,6 +10,18 @@ Instructions for Deployment:
 
 Contributions:
 
-Rich: Worked on MoviesServlet.java, single-star.html, single-star.js, AWS server testing, video demo
+Project 1:
+    Rich:   Worked on MoviesServlet.java, single-star.html, single-star.js, AWS server testing, video demo
 
-Eric: Worked on index.html, index.js, single-movie.html, single-movie.js, SingleMovieServlet.java, SingleStarServlet.java
+    Eric:   Worked on index.html, index.js, single-movie.html, single-movie.js, SingleMovieServlet.java, SingleStarServlet.java
+
+Project 2:
+    Rich:   CartServlet, DecreaseCartServlet, PaymentServlet, PlaceOrderServlet, SearchServlet,
+            cart.html, cart.js, payment.html, payment.js, place-order.html, search.html, search.js,
+            single-movie.html
+
+    Eric:   BrowseByGenreServlet, BrowseByTitleServlet, IndexBrowseGenreServlet, LoginFilter, LoginServlet,
+            MoviesServlet, SearchServlet, SingleMovieServlet, SingleStarServlet, User,
+            browse.html, browse.js, browse-genre.html, browse-genre.js, cart.html, cart.js, index.html, index.js,
+            login.html, login.js, movielist.html, movielist.js, payment.html, place-order.html,
+            search.html, search.js, single-movie.html, single-movie.js, single-star.html, single-star.js
