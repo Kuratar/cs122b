@@ -51,9 +51,9 @@ function handleCartArray(resultArray) {
     let rowHTML = "";
     for (let i = 0; i < resultArray.length; i++) {
         rowHTML += "<tr>";
-        rowHTML += "<th>" + resultArray[i]["title"] + "</th>";
-        rowHTML += "<th>" + resultArray[i]["quantity"] + "</th>";
-        rowHTML += "<th>" + "$10.00" + "</th>";
+        rowHTML += "<th style=\"font-size: x-large\">" + resultArray[i]["title"] + "</th>";
+        rowHTML += "<th style=\"font-size: x-large\">" + resultArray[i]["quantity"] + "</th>";
+        rowHTML += "<th style=\"font-size: x-large\">" + "$" + parseInt(resultArray[i]["quantity"])*10 + ".00" + "</th>";
         rowHTML += "<th style='font-size: x-large'>" +
             "<button style=\"font-size: x-large\" onclick=\"decreaseQuantity('" + resultArray[i]['title'] + "', '" +
             "added_to_cart" + i + "')\"> Decrease Quantity </button>\n" +
@@ -72,6 +72,11 @@ function handleCartArray(resultArray) {
             "<br>\n" +
             "<label style=\"font-size: x-large\" id=\"delete_from_cart" + i + "\"></label>\n" +
             "</th>";
+
+        rowHTML += "<th style=\"font-size: x-large\">" + resultArray[i]["title"] + "</th>";
+        rowHTML += "<th style=\"font-size: x-large\">" + resultArray[i]["quantity"] + "</th>";
+        rowHTML += "<th style=\"font-size: x-large\">" + "$" + parseInt(resultArray[i]["quantity"])*10 + ".00" + "</th>";
+
         rowHTML += "</tr>";
 
     }

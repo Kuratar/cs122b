@@ -60,12 +60,49 @@ function changeNMovies() {
     return false;
 }
 
+function addToShoppingCart(movieId, rowMessageId)
+{
+    console.log("Added movie to shopping cart");
+    let addedToCartLabel = jQuery("#" + rowMessageId);
+    let addedToCartMessage = window.document.getElementById(rowMessageId).textContent;
+
+    $.ajax("api/cart", {
+        method: "POST",
+        data: {id: movieId},
+        error: function() {
+            console.log("Failure: add to cart");
+            if (addedToCartMessage !== "Failure: add to cart") {
+                addedToCartLabel.append("Failure: could not add to cart");
+            }
+        },
+        success: function () {
+            console.log("Success: add to cart");
+            if (addedToCartMessage === "") {
+                addedToCartLabel.append("Added to cart 1");
+            }
+            else {
+                let addedToCartNumber = parseInt(addedToCartMessage.slice(14))+1;
+                addedToCartMessage = "Added to cart " + addedToCartNumber;
+                window.document.getElementById(rowMessageId).textContent = addedToCartMessage;
+            }
+        }
+    });
+}
+
 function handleSearchResult(resultData) {
     if (resultData.length === 0) {
+        let prevButtonElementTop = jQuery("#prev_link_top");
         let noMoreMoviesElementTop = jQuery("#no_more_movies_top");
-        let noMoreMoviesElementBot = jQuery("#no_more_movies_bot");
-        noMoreMoviesElementTop.append("No more movies");
-        noMoreMoviesElementBot.append("No more movies");
+        noMoreMoviesElementTop.append("<b>No more movies or try changing movies per page/sorting option on the first page</b>");
+        let prevButtonLink = '<a href="search.html?title=' + title +
+            '&year=' + year +
+            '&director=' + director +
+            '&star=' + star +
+            '&nMovies=' + nMovies +
+            '&page=' + "0" +
+            '&sorting=' + sorting + '">' +
+            'Click here to go back to the first page with your desired settings' + '</a>';
+        prevButtonElementTop.append(prevButtonLink);
         return;
     }
 
@@ -159,6 +196,14 @@ function handleSearchResult(resultData) {
         rowHTML += starHTML;
 
         rowHTML += "<th style=\"font-size: x-large\">" + resultData[i]["movie_rating"] + "</th>";
+
+        rowHTML += "<th style='font-size: x-large'>" +
+                        "<button style=\"font-size: x-large\" onclick=\"addToShoppingCart('" + resultData[i]['movie_id'] + "', '" +
+                        "added_to_cart" + i + "')\"> Add to Cart </button>\n" +
+                        "<br>\n" +
+                        "<label style=\"font-size: x-large\" id=\"added_to_cart" + i + "\"></label>\n" +
+                   "</th>";
+
         rowHTML += "</tr>";
 
         // append the row created to the table body, which will refresh the page
