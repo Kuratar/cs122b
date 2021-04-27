@@ -85,10 +85,15 @@ function addToShoppingCart(movieId, rowMessageId)
  */
 function handleBrowseGenreResult(resultData) {
     if (resultData.length === 0) {
+        let prevButtonElementTop = jQuery("#prev_link_top");
         let noMoreMoviesElementTop = jQuery("#no_more_movies_top");
-        let noMoreMoviesElementBot = jQuery("#no_more_movies_bot");
-        noMoreMoviesElementTop.append("No more movies");
-        noMoreMoviesElementBot.append("No more movies");
+        noMoreMoviesElementTop.append("<b>No more movies or try changing movies per page/sorting option on the first page</b>");
+        let prevButtonLink = '<a href="browse-genre.html?id=' + genreId +
+            '&nMovies=' + nMovies +
+            '&page=' + "0" +
+            '&sorting=' + sorting + '">' +
+            'Click here to go back to the first page with your desired settings' + '</a>';
+        prevButtonElementTop.append(prevButtonLink);
         return;
     }
 
