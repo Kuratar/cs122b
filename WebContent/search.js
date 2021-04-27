@@ -41,6 +41,13 @@ function addDefaultParameters() {
         console.log("Adding default parameters to url");
         window.history.pushState(null, null,
             window.location.href + "&nMovies=10&page=0&sorting=default");
+        jQuery.ajax({
+            dataType: "json", // Setting return data type
+            method: "GET", // Setting request method
+            url: "api/search?title=" + title + "&year=" + year + "&director=" + director + "&star=" + star +
+                "&nMovies=10&page=0&sorting=default", // Setting request url, which is mapped by MoviesServlet in Movies.java
+            success: (resultData) => handleSearchResult(resultData) // Setting callback function to handle data returned successfully by the MoviesServlet
+        });
     }
 }
 
