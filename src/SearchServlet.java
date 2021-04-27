@@ -53,7 +53,7 @@ public class SearchServlet extends HttpServlet {
     throws IOException {
         try {
             // Generate a SQL query
-            String query = "SELECT movies.id, title, year, director, rating from ratings, movies";
+            String query = "SELECT distinct movies.id, title, year, director, rating from ratings, movies";
 
             if (!star.isEmpty())
 
@@ -97,8 +97,7 @@ public class SearchServlet extends HttpServlet {
                 }
                 query += "director like '%" + director + "%'";
             }
-            query += " and ratings.movieId = movies.id\n" +
-                     "group by movies.id\n";
+            query += " and ratings.movieId = movies.id\n";
             // sorting option if wanted - if none of these selected, return rows as is from database
             switch (sortingOption) {
                 case "titleRatingASCE": query += "order by title, rating\n";        break;
