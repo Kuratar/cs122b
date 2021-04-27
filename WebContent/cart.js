@@ -10,18 +10,16 @@ function proceedToPayment()
 }
 
 function handleSessionData(resultDataString) {
-    let resultDataJson = JSON.parse(resultDataString);
-
     console.log("handle session response");
-    console.log(resultDataJson);
-    console.log(resultDataJson["sessionID"]);
+    console.log(resultDataString);
+    console.log(resultDataString["sessionID"]);
 
     // show the session information
-    $("#sessionID").text("Session ID: " + resultDataJson["sessionID"]);
-    $("#lastAccessTime").text("Last access time: " + resultDataJson["lastAccessTime"]);
+    $("#sessionID").text("Session ID: " + resultDataString["sessionID"]);
+    $("#lastAccessTime").text("Last access time: " + resultDataString["lastAccessTime"]);
 
     // show cart information
-    handleCartArray(resultDataJson["previousItems"]);
+    handleCartArray(resultDataString["previousItems"]);
 }
 
 function handleCartArray(resultArray) {

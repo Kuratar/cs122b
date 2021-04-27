@@ -35,6 +35,8 @@ public class CartServlet extends HttpServlet {
         }
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json; charset=utf-8"); // Response mime type
+
         HttpSession session = request.getSession();
         String sessionId = session.getId();
         long lastAccessTime = session.getLastAccessedTime();
@@ -65,6 +67,8 @@ public class CartServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json; charset=utf-8"); // Response mime type
+
         String id = request.getParameter("id");
         String title = "";
         try (Connection conn = dataSource.getConnection()) {

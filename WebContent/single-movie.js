@@ -18,9 +18,29 @@
 function addToShoppingCart()
 {
     console.log("Added movie to shopping cart");
+    let addedToCartLabel = jQuery("#added_to_cart");
+    let addedToCartMessage = window.document.getElementById("added_to_cart").textContent;
+
     $.ajax("api/cart", {
         method: "POST",
         data: {id: getParameterByName('id')},
+        error: function() {
+            console.log("Failure: add to cart");
+            if (addedToCartMessage !== "Failure: add to cart") {
+                addedToCartLabel.append("Failure: could not add to cart");
+            }
+        },
+        success: function () {
+            console.log("Success: add to cart");
+            if (addedToCartMessage === "") {
+                addedToCartLabel.append("Added to cart 1");
+            }
+            else {
+                let addedToCartNumber = parseInt(addedToCartMessage.slice(14))+1;
+                addedToCartMessage = "Added to cart " + addedToCartNumber;
+                window.document.getElementById("added_to_cart").textContent = addedToCartMessage;
+            }
+        }
     });
 }
 function getParameterByName(target) {
