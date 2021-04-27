@@ -29,9 +29,9 @@ function handleCartArray(resultArray) {
     let rowHTML = "";
     for (let i = 0; i < resultArray.length; i++) {
         rowHTML += "<tr>";
-        rowHTML += "<th>" + resultArray[i]["title"] + "</th>";
-        rowHTML += "<th>" + resultArray[i]["quantity"] + "</th>";
-        rowHTML += "<th>" + "$" + parseInt(resultArray[i]["quantity"])*10 + ".00" + "</th>";
+        rowHTML += "<th style=\"font-size: x-large\">" + resultArray[i]["title"] + "</th>";
+        rowHTML += "<th style=\"font-size: x-large\">" + resultArray[i]["quantity"] + "</th>";
+        rowHTML += "<th style=\"font-size: x-large\">" + "$" + parseInt(resultArray[i]["quantity"])*10 + ".00" + "</th>";
         rowHTML += "</tr>";
 
     }
