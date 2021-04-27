@@ -112,7 +112,6 @@ public class SearchServlet extends HttpServlet {
                     // pages generate the current page of results and the next
                     // second time i will be 1 - this makes this query generate the next page of results
                     "offset " + Integer.parseInt(pageNumber) * Integer.parseInt(nMovies);
-            System.out.println(query);
 
             // Perform the query
             PreparedStatement statement = dbCon.prepareStatement(query);
@@ -220,19 +219,12 @@ public class SearchServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         String title = request.getParameter("title");
-        System.out.println(title);
         String year = request.getParameter("year");
-        System.out.println(year);
         String director = request.getParameter("director");
-        System.out.println(director);
         String star = request.getParameter("star");
-        System.out.println(star);
         String nMovies = request.getParameter("nMovies");
-        System.out.println(nMovies);
         String pageNumber = request.getParameter("page");
-        System.out.println(pageNumber);
         String sortingOption = request.getParameter("sorting");
-        System.out.println(sortingOption);
 
         try (Connection dbCon = dataSource.getConnection()) {
             // Create a new connection to database
