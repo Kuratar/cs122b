@@ -1,4 +1,27 @@
 let payment_form = $("#payment_form");
+
+function handlePaymentResult(resultDataString) {
+    let resultDataJson = JSON.parse(resultDataString);
+
+    console.log("handle login response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["status"]);
+
+    // If login succeeds, it will redirect the user to index.html
+    if (resultDataJson["status"] === "success") {
+        $("#payment_success_message").text("Your payment has been confirmed. Enjoy the movie!");
+        //window.location.replace("index.html");
+        window.location.replace("place-order.html");
+    } else {
+        // If login fails, the web page will display
+        // error messages on <div> with id "login_error_message"
+        console.log("show error message");
+        console.log(resultDataJson["message"]);
+        $("#payment_error_message").text(resultDataJson["message"]);
+
+    }
+}
+
 function handleResult(resultData) {
 
     console.log("handleResult: populating movie info from resultData");
@@ -31,11 +54,11 @@ function submitPaymentForm(formSubmitEvent) {
     formSubmitEvent.preventDefault();
 
     $.ajax(
-        "api/payment", {
+        "api/place-order", {
             method: "POST",
             // Serialize the login form to the data sent by POST request
-            data: login_form.serialize(),
-            //success: system.out.println("works lol");
+            data: payment_form.serialize(),
+            success: handlePaymentResult
         }
     );
 }
