@@ -53,7 +53,7 @@ public class SearchServlet extends HttpServlet {
     throws IOException {
         try {
             // Generate a SQL query
-            String query = "SELECT movies.id, title, year, director, rating from ratings, movies";
+            String query = "SELECT distinct movies.id, title, year, director, rating from ratings, movies";
 
             if (!star.isEmpty())
 
@@ -97,8 +97,7 @@ public class SearchServlet extends HttpServlet {
                 }
                 query += "director like '%" + director + "%'";
             }
-            query += " and ratings.movieId = movies.id\n" +
-                     "group by movies.id\n";
+            query += " and ratings.movieId = movies.id\n";
             // sorting option if wanted - if none of these selected, return rows as is from database
             switch (sortingOption) {
                 case "titleRatingASCE": query += "order by title, rating\n";        break;
@@ -141,11 +140,17 @@ public class SearchServlet extends HttpServlet {
             for (int i = 0; i<jsonArray.size(); i++)
             {
                 JsonObject movie = jsonArray.get(i).getAsJsonObject(); //convert from jsonElement to jsonObject
-                String query2 = "select stars.id, name\n" +
+                String query2 = "select s.id, s.name, count(movieId) as movies\n" +
+                        "from (\n" +
+                        "select stars.id, name\n" +
                         "from stars_in_movies, stars\n" +
                         "where movieId=" + movie.get("movie_id") + " and stars.id = stars_in_movies.starId\n" +
-                        "order by name\n" +
-                        "limit 3"; //query 2
+                        "order by id\n" +
+                        ") as s, stars_in_movies\n" +
+                        "where s.id = stars_in_movies.starId\n" +
+                        "group by s.id\n" +
+                        "order by movies desc\n" +
+                        "limit 3";
 
                 PreparedStatement statement2 = dbCon.prepareStatement(query2);
                 ResultSet rstemp = statement2.executeQuery(); //Another resultset to execute 2nd query
@@ -168,16 +173,10 @@ public class SearchServlet extends HttpServlet {
             for (int i = 0; i<jsonArray.size(); i++)
             {
                 JsonObject movie = jsonArray.get(i).getAsJsonObject();
-                String query3 = "select s.id, s.name, count(movieId) as movies\n" +
-                        "from (\n" +
-                        "select stars.id, name\n" +
-                        "from stars_in_movies, stars\n" +
-                        "where movieId=" + movie.get("movie_id") + " and stars.id = stars_in_movies.starId\n" +
-                        "order by id\n" +
-                        ") as s, stars_in_movies\n" +
-                        "where s.id = stars_in_movies.starId\n" +
-                        "group by s.id\n" +
-                        "order by movies desc\n" +
+                String query3 = "select genres.id, name\n" +
+                        "from genres_in_movies, genres\n" +
+                        "where movieId=" + movie.get("movie_id") + " and genres.id = genres_in_movies.genreId\n" +
+                        "order by name\n" +
                         "limit 3";
 
                 PreparedStatement statement3 = dbCon.prepareStatement(query3);
