@@ -9,6 +9,28 @@ function proceedToPayment()
     });
 }
 
+function decreaseQuantity(movieTitle) {
+    $.ajax("api/modify-cart", {
+        method: "POST",
+        data: {title: movieTitle, command: "decrease"}
+    });
+}
+function increaseQuantity(movieTitle)
+{
+    $.ajax("api/modify-cart", {
+        method: "POST",
+        data: {title: movieTitle, command: "increase"}
+    });
+}
+
+function deleteItem(movieTitle)
+{
+    $.ajax("api/modify-cart", {
+        method: "POST",
+        data: {title: movieTitle, command: "delete"}
+    });
+}
+
 function handleSessionData(resultDataString) {
     console.log("handle session response");
     console.log(resultDataString);
@@ -32,6 +54,24 @@ function handleCartArray(resultArray) {
         rowHTML += "<th>" + resultArray[i]["title"] + "</th>";
         rowHTML += "<th>" + resultArray[i]["quantity"] + "</th>";
         rowHTML += "<th>" + "$10.00" + "</th>";
+        rowHTML += "<th style='font-size: x-large'>" +
+            "<button style=\"font-size: x-large\" onclick=\"decreaseQuantity('" + resultArray[i]['title'] + "', '" +
+            "added_to_cart" + i + "')\"> Decrease Quantity </button>\n" +
+            "<br>\n" +
+            "<label style=\"font-size: x-large\" id=\"decrease_cart" + i + "\"></label>\n" +
+            "</th>";
+        rowHTML += "<th style='font-size: x-large'>" +
+            "<button style=\"font-size: x-large\" onclick=\"increaseQuantity('" + resultArray[i]['title'] + "', '" +
+            "added_to_cart" + i + "')\"> Increase Quantity </button>\n" +
+            "<br>\n" +
+            "<label style=\"font-size: x-large\" id=\"increase_cart" + i + "\"></label>\n" +
+            "</th>";
+        rowHTML += "<th style='font-size: x-large'>" +
+            "<button style=\"font-size: x-large\" onclick=\"deleteItem('" + resultArray[i]['title'] + "', '" +
+            "added_to_cart" + i + "')\"> Delete Item </button>\n" +
+            "<br>\n" +
+            "<label style=\"font-size: x-large\" id=\"delete_from_cart" + i + "\"></label>\n" +
+            "</th>";
         rowHTML += "</tr>";
 
     }

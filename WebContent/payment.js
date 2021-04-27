@@ -7,10 +7,13 @@ function handlePaymentResult(resultDataString) {
     console.log(resultDataJson);
     console.log(resultDataJson["status"]);
 
-    // If login succeeds, it will redirect the user to index.html
     if (resultDataJson["status"] === "success") {
         $("#payment_success_message").text("Your payment has been confirmed. Enjoy the movie!");
         //window.location.replace("index.html");
+        console.log(resultDataJson["sale_info"]);
+        console.log(resultDataJson["total"]);
+         $("#sale_info").text(resultDataJson["sale_info"]);
+         $("#total").text(resultDataJson["total"]);
         window.location.replace("place-order.html");
     } else {
         // If login fails, the web page will display

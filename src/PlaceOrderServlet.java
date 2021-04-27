@@ -86,11 +86,15 @@ public class PlaceOrderServlet extends HttpServlet {
                 String date_str = String.format("%tF", date);
 
                 HashMap<String, Integer> previousItems = (HashMap<String, Integer>) session.getAttribute("previousItems");
-
+                int total = 0;
+                String sale_info = "";
                 for(Map.Entry<String,Integer> entry: previousItems.entrySet())
                 {
                     String title = entry.getKey();
                     int quantity = entry.getValue();
+
+                    sale_info += title + "\t" + quantity + "\t$" + quantity*10 + "\n";
+                    total += quantity * 10;
                     String movieId = "";
 
                     String query3 = "select id\n" +
@@ -115,6 +119,10 @@ public class PlaceOrderServlet extends HttpServlet {
 
                     rs3.close();
                 }
+                responseJsonObject.addProperty("total", total);
+                responseJsonObject.addProperty("sale_info", sale_info);
+                System.out.println(total);
+                System.out.println(sale_info);
 
                 rs2.close();
                 session.removeAttribute("previousItems");
