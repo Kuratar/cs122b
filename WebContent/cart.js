@@ -31,7 +31,7 @@ function handleCartArray(resultArray) {
         rowHTML += "<tr>";
         rowHTML += "<th>" + resultArray[i]["title"] + "</th>";
         rowHTML += "<th>" + resultArray[i]["quantity"] + "</th>";
-        rowHTML += "<th>" + "$10.00" + "</th>";
+        rowHTML += "<th>" + "$" + parseInt(resultArray[i]["quantity"])*10 + ".00" + "</th>";
         rowHTML += "</tr>";
 
     }
