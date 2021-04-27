@@ -140,11 +140,17 @@ public class SearchServlet extends HttpServlet {
             for (int i = 0; i<jsonArray.size(); i++)
             {
                 JsonObject movie = jsonArray.get(i).getAsJsonObject(); //convert from jsonElement to jsonObject
-                String query2 = "select stars.id, name\n" +
+                String query2 = "select s.id, s.name, count(movieId) as movies\n" +
+                        "from (\n" +
+                        "select stars.id, name\n" +
                         "from stars_in_movies, stars\n" +
                         "where movieId=" + movie.get("movie_id") + " and stars.id = stars_in_movies.starId\n" +
-                        "order by name\n" +
-                        "limit 3"; //query 2
+                        "order by id\n" +
+                        ") as s, stars_in_movies\n" +
+                        "where s.id = stars_in_movies.starId\n" +
+                        "group by s.id\n" +
+                        "order by movies desc\n" +
+                        "limit 3";
 
                 PreparedStatement statement2 = dbCon.prepareStatement(query2);
                 ResultSet rstemp = statement2.executeQuery(); //Another resultset to execute 2nd query
@@ -167,16 +173,10 @@ public class SearchServlet extends HttpServlet {
             for (int i = 0; i<jsonArray.size(); i++)
             {
                 JsonObject movie = jsonArray.get(i).getAsJsonObject();
-                String query3 = "select s.id, s.name, count(movieId) as movies\n" +
-                        "from (\n" +
-                        "select stars.id, name\n" +
-                        "from stars_in_movies, stars\n" +
-                        "where movieId=" + movie.get("movie_id") + " and stars.id = stars_in_movies.starId\n" +
-                        "order by id\n" +
-                        ") as s, stars_in_movies\n" +
-                        "where s.id = stars_in_movies.starId\n" +
-                        "group by s.id\n" +
-                        "order by movies desc\n" +
+                String query3 = "select genres.id, name\n" +
+                        "from genres_in_movies, genres\n" +
+                        "where movieId=" + movie.get("movie_id") + " and genres.id = genres_in_movies.genreId\n" +
+                        "order by name\n" +
                         "limit 3";
 
                 PreparedStatement statement3 = dbCon.prepareStatement(query3);

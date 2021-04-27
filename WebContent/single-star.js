@@ -60,7 +60,12 @@ function handleResult(resultData) {
         rowHTML += "<tr>";
         rowHTML += "<th style='font-size: x-large'>" + '<a href="single-movie.html?id=' + resultData[i]['movie_id'] +
             '&list=' + movieListType +
+            '&title=' + title +
+            '&year=' + year +
+            '&director=' + director +
+            '&star=' + star +
             '&genreId=' + genreId +
+            '&char=' + char +
             '&nMovies=' + nMovies +
             '&page=' + page +
             '&sorting=' + sortingOption + '">'

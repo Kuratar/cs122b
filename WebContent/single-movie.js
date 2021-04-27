@@ -120,7 +120,12 @@ function handleResult(resultData) {
             // add a link to single-star.html with id passed with GET url parameter
             '<a href="single-star.html?id=' + starIdsSplit[i] +
             '&list=' + movieListType +
+            '&title=' + title +
+            '&year=' + year +
+            '&director=' + director +
+            '&star=' + star +
             '&genreId=' + genreId +
+            '&char=' + char +
             '&nMovies=' + nMovies +
             '&page=' + page +
             '&sorting=' + sortingOption + '">'
