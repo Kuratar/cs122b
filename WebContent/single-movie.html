@@ -21,7 +21,13 @@
 </head>
 <body>
 <h1>Single Movie Page</h1>
-<button onclick="addToShoppingCart()"> Add to Cart </button>
+<button style="font-size: x-large" onclick="addToShoppingCart()"> Add to Cart </button>
+<br>
+<label style="font-size: x-large" id="added_to_cart"></label>
+<br>
+<form style="font-size: x-large" id="checkout1" action="cart.html">
+    <input type="submit" value="Checkout">
+</form>
 <!-- H3 body is left empty here, will be populated with the data retrieved with single-movie.js -->
 <!-- single-movie.js will find this html element by it's id "movie_info" -->
 <h2 id="movie_info"></h2>
