@@ -2,6 +2,8 @@
 
 Project 1 Video Demo URL: https://vimeo.com/535382852
 
+Project 2 Video Demo URL: https://vimeo.com/542397737
+
 Instructions for Deployment:
 1. git clone into repository
 2. run mvn clean package
