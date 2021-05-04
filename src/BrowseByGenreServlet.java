@@ -43,30 +43,55 @@ public class BrowseByGenreServlet extends HttpServlet {
     private JsonArray generateResults(HttpServletResponse response, Connection conn,
                                       String genreId, String nMovies, String pageNumber, String sortingOption)
     throws IOException {
-        try {
+        // query to get all movies associated with genre
+        String query = "select id, title, year, director, rating\n" +
+                "from movies, ratings, genres_in_movies\n" +
+                "where genres_in_movies.genreId=? and genres_in_movies.movieId=movies.id and movies.id=ratings.movieId\n";
+        // sorting option if given
+        switch (sortingOption) {
+            case "titleRatingASCE": query += "order by title, rating\n";        break;
+            case "titleRatingDESC": query += "order by title desc, rating\n";   break;
+            case "ratingTitleASCE": query += "order by rating, title\n";        break;
+            case "ratingTitleDESC": query += "order by rating desc, title\n";   break;
+        }
+        // add pagination parameters
+        query += "limit ?\n" +
+                 "offset ?";
+
+        // query to get first 3 genres based on alphabetical order
+        String query2 = "select genres.id, name\n" +
+                "from genres_in_movies, genres\n" +
+                "where movieId=? and genres.id = genres_in_movies.genreId\n" +
+                "order by name\n" +
+                "limit 3";
+
+        // query to get first 3 stars based on number of movies starred
+        String query3 = "select s.id, s.name, count(movieId) as movies\n" +
+                "from (\n" +
+                "select stars.id, name\n" +
+                "from stars_in_movies, stars\n" +
+                "where movieId=? and stars.id = stars_in_movies.starId\n" +
+                "order by id\n" +
+                ") as s, stars_in_movies\n" +
+                "where s.id = stars_in_movies.starId\n" +
+                "group by s.id\n" +
+                "order by movies desc\n" +
+                "limit 3";
+
+        try (PreparedStatement statement = conn.prepareStatement(query);
+             PreparedStatement statement2 = conn.prepareStatement(query2);
+             PreparedStatement statement3 = conn.prepareStatement(query3)) {
             JsonArray jsonArray = new JsonArray();
 
-            // query to get all movies associated with genre
-            String query = "select id, title, year, director, rating\n" +
-                    "from movies, ratings, genres_in_movies\n" +
-                    "where genres_in_movies.genreId=" + genreId + " and " +
-                    "genres_in_movies.movieId=movies.id and movies.id=ratings.movieId\n";
-            // sorting option if wanted - if none of these selected, return rows as is from database
-            switch (sortingOption) {
-                case "titleRatingASCE": query += "order by title, rating\n";            break;
-                case "titleRatingDESC": query += "order by title desc, rating\n";  break;
-                case "ratingTitleASCE": query += "order by rating, title\n";            break;
-                case "ratingTitleDESC": query += "order by rating desc, title\n";  break;
-            }
-            query += "limit " + nMovies + "\n" +
-                    // add i to current page number
-                    // the first time, i will be 0 and thus will not change the current page number since even
-                    // pages generate the current page of results and the next
-                    // second time i will be 1 - this makes this query generate the next page of results
-                    "offset " + Integer.parseInt(pageNumber) * Integer.parseInt(nMovies);
-            PreparedStatement statement = conn.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            // place in genreId
+            statement.setInt(1, Integer.parseInt(genreId));
+            // place in number of movies per page
+            statement.setInt(2, Integer.parseInt(nMovies));
+            // place in offset for which page of results
+            statement.setInt(3, Integer.parseInt(pageNumber) * Integer.parseInt(nMovies));
+            System.out.println(statement.toString());
 
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 // get properties for movie
                 String movieId = rs.getString("id");
@@ -75,27 +100,11 @@ public class BrowseByGenreServlet extends HttpServlet {
                 String movieDirector = rs.getString("director");
                 String movieRating = rs.getString("rating");
 
-                // query to get first 3 genres based on alphabetical order
-                String query2 = "select genres.id, name\n" +
-                        "from genres_in_movies, genres\n" +
-                        "where movieId='" + movieId + "' and genres.id = genres_in_movies.genreId\n" +
-                        "order by name\n" +
-                        "limit 3";
-                PreparedStatement statement2 = conn.prepareStatement(query2);
+                // set the movieId for getting genre and star queries
+                statement2.setString(1, movieId);
+                statement3.setString(1, movieId);
+
                 ResultSet rs2 = statement2.executeQuery();
-                // query to get first 3 stars based on number of movies starred
-                String query3 = "select s.id, s.name, count(movieId) as movies\n" +
-                        "from (\n" +
-                        "select stars.id, name\n" +
-                        "from stars_in_movies, stars\n" +
-                        "where movieId='" + movieId + "' and stars.id = stars_in_movies.starId\n" +
-                        "order by id\n" +
-                        ") as s, stars_in_movies\n" +
-                        "where s.id = stars_in_movies.starId\n" +
-                        "group by s.id\n" +
-                        "order by movies desc\n" +
-                        "limit 3";
-                PreparedStatement statement3 = conn.prepareStatement(query3);
                 ResultSet rs3 = statement3.executeQuery();
 
                 // get ids and names of genre and stars into a string
@@ -133,24 +142,23 @@ public class BrowseByGenreServlet extends HttpServlet {
 
                 rs2.close();
                 rs3.close();
-                statement2.close();
-                statement3.close();
             }
-
             rs.close();
             statement.close();
+            statement2.close();
+            statement3.close();
             return jsonArray;
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
+            JsonArray errorArray = new JsonArray();
             jsonObject.addProperty("errorMessage", e.getMessage() + "from generateResults");
-            response.getWriter().write(jsonObject.toString());
+            errorArray.add(jsonObject);
 
             // set response status to 500 (Internal Server Error)
             response.setStatus(500);
+            return errorArray;
         }
-        JsonArray emptyArray = new JsonArray();
-        return emptyArray;
     }
 
     /**
@@ -198,13 +206,15 @@ public class BrowseByGenreServlet extends HttpServlet {
                     response.getWriter().write(previousPageResults.toString());
                 }
             }
-            response.setStatus(200);
-
+            if (response.getStatus() == 500) { }
+            else { response.setStatus(200); }
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
+            JsonArray errorArray = new JsonArray();
             jsonObject.addProperty("errorMessage", e.getMessage());
-            response.getWriter().write(jsonObject.toString());
+            errorArray.add(jsonObject);
+            response.getWriter().write(errorArray.toString());
 
             // set response status to 500 (Internal Server Error)
             response.setStatus(500);
