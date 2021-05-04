@@ -198,11 +198,11 @@ function handleSearchResult(resultData) {
         rowHTML += "<th style=\"font-size: x-large\">" + resultData[i]["movie_rating"] + "</th>";
 
         rowHTML += "<th style='font-size: x-large'>" +
-                        "<button style=\"font-size: x-large\" onclick=\"addToShoppingCart('" + resultData[i]['movie_id'] + "', '" +
-                        "added_to_cart" + i + "')\"> Add to Cart </button>\n" +
-                        "<br>\n" +
-                        "<label style=\"font-size: x-large\" id=\"added_to_cart" + i + "\"></label>\n" +
-                   "</th>";
+            "<button style=\"font-size: x-large\" onclick=\"addToShoppingCart('" + resultData[i]['movie_id'] + "', '" +
+            "added_to_cart" + i + "')\"> Add to Cart </button>\n" +
+            "<br>\n" +
+            "<label style=\"font-size: x-large\" id=\"added_to_cart" + i + "\"></label>\n" +
+            "</th>";
 
         rowHTML += "</tr>";
 
