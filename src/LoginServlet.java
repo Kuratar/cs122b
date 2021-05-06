@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -35,24 +36,20 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        /* This example only allows username/password to be test/test
-        /  in the real project, you should talk to the database to verify username/password
-        */
-        JsonObject responseJsonObject = new JsonObject();
+        // query to check if user exists within database
+        String userQuery = "select id, firstName, lastName, ccId, address\n" +
+                "from customers\n" +
+                "where email=? and password=?";
 
-        try (Connection conn = dataSource.getConnection()) {
-            // Declare our statement
-            Statement statement = conn.createStatement();
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement statement = conn.prepareStatement(userQuery)) {
+            JsonObject responseJsonObject = new JsonObject();
 
-            // query to check if user exists within database
-            String userQuery = "select id, firstName, lastName, ccId, address\n" +
-                            "from customers\n" +
-                            "where email='" + email + "' and " +
-                            "password='" + password + "'";
+            statement.setString(1, email);
+            statement.setString(2, password);
 
             // Perform check user query
-            ResultSet rs = statement.executeQuery(userQuery);
-
+            ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 // login success
                 int userId = rs.getInt("id");
@@ -74,6 +71,7 @@ public class LoginServlet extends HttpServlet {
             rs.close();
             statement.close();
             response.setStatus(200);
+            response.getWriter().write(responseJsonObject.toString());
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
@@ -83,7 +81,5 @@ public class LoginServlet extends HttpServlet {
             // set response status to 500 (Internal Server Error)
             response.setStatus(500);
         }
-
-        response.getWriter().write(responseJsonObject.toString());
     }
 }
