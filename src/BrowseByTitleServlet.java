@@ -110,7 +110,6 @@ public class BrowseByTitleServlet extends HttpServlet {
                 // place in offset for which page of results
                 statement.setInt(3, Integer.parseInt(pageNumber) * Integer.parseInt(nMovies));
             }
-            System.out.println(statement.toString());
 
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
