@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -35,20 +36,17 @@ public class IndexBrowseGenreServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json; charset=utf-8");
 
-        JsonArray jsonArray = new JsonArray();
+        // query to get all genres
+        String genreQuery = "select *\n" +
+                "from genres\n" +
+                "order by name;";
 
-        try (Connection conn = dataSource.getConnection()) {
-            // Declare our statement
-            Statement statement = conn.createStatement();
-
-            // query to get all genres
-            String genreQuery = "select *\n" +
-                                "from genres\n" +
-                                "order by name;";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement statement = conn.prepareStatement(genreQuery)) {
+            JsonArray jsonArray = new JsonArray();
 
             // Perform get all genres query
-            ResultSet rs = statement.executeQuery(genreQuery);
-
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 String genreId = rs.getString("id");
                 String genreName = rs.getString("name");
@@ -63,6 +61,7 @@ public class IndexBrowseGenreServlet extends HttpServlet {
             rs.close();
             statement.close();
             response.setStatus(200);
+            response.getWriter().write(jsonArray.toString());
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
@@ -72,7 +71,5 @@ public class IndexBrowseGenreServlet extends HttpServlet {
             // set response status to 500 (Internal Server Error)
             response.setStatus(500);
         }
-
-        response.getWriter().write(jsonArray.toString());
     }
 }
