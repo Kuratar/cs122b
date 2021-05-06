@@ -43,37 +43,42 @@ public class SingleMovieServlet extends HttpServlet {
         String id = request.getParameter("id");
         PrintWriter out = response.getWriter();
 
-        try {
-            Connection conn = this.dataSource.getConnection();
+        String query = "select title, year, director, rating\n" +
+                "from movies, ratings\n" +
+                "where movies.id=? and ratings.movieId=?";
 
+        String query2 = "select genres.id, name\n" +
+                "from genres_in_movies, genres\n" +
+                "where movieId=? and genres.id = genres_in_movies.genreId\n" +
+                "order by name";
+
+        String query3 = "select s.id, s.name, count(movieId) as movies\n" +
+                "from (\n" +
+                "select stars.id, name\n" +
+                "from stars_in_movies, stars\n" +
+                "where movieId=? and stars.id = stars_in_movies.starId\n" +
+                "order by id\n" +
+                ") as s, stars_in_movies\n" +
+                "where s.id = stars_in_movies.starId\n" +
+                "group by s.id\n" +
+                "order by movies desc";
+
+        try (Connection conn = this.dataSource.getConnection();
+             PreparedStatement statement = conn.prepareStatement(query);
+             PreparedStatement statement2 = conn.prepareStatement(query2);
+             PreparedStatement statement3 = conn.prepareStatement(query3)) {
             try {
-                String query = "select title, year, director, rating\n" +
-                        "from movies, ratings\n" +
-                        "where movies.id='" + id + "' and " +
-                        "ratings.movieId='" + id + "'";
-                PreparedStatement statement = conn.prepareStatement(query);
+                statement.setString(1, id);
+                statement.setString(2, id);
                 ResultSet rs = statement.executeQuery();
-                String query2 = "select genres.id, name\n" +
-                        "from genres_in_movies, genres\n" +
-                        "where movieId='" + id + "' and " +
-                        "genres.id = genres_in_movies.genreId\n" +
-                        "order by name";
-                PreparedStatement statement2 = conn.prepareStatement(query2);
-                ResultSet rs2 = statement2.executeQuery();
-                String query3 = "select s.id, s.name, count(movieId) as movies\n" +
-                        "from (\n" +
-                        "select stars.id, name\n" +
-                        "from stars_in_movies, stars\n" +
-                        "where movieId='" + id + "' and stars.id = stars_in_movies.starId\n" +
-                        "order by id\n" +
-                        ") as s, stars_in_movies\n" +
-                        "where s.id = stars_in_movies.starId\n" +
-                        "group by s.id\n" +
-                        "order by movies desc";
-                PreparedStatement statement3 = conn.prepareStatement(query3);
-                ResultSet rs3 = statement3.executeQuery();
-                JsonArray jsonArray = new JsonArray();
 
+                statement2.setString(1, id);
+                ResultSet rs2 = statement2.executeQuery();
+
+                statement3.setString(1, id);
+                ResultSet rs3 = statement3.executeQuery();
+
+                JsonArray jsonArray = new JsonArray();
                 while(true) {
                     if (!rs.next()) {
                         rs.close();
@@ -138,10 +143,8 @@ public class SingleMovieServlet extends HttpServlet {
                         var24.addSuppressed(var23);
                     }
                 }
-
                 throw var24;
             }
-
             if (conn != null) {
                 conn.close();
             }
@@ -153,6 +156,5 @@ public class SingleMovieServlet extends HttpServlet {
         } finally {
             out.close();
         }
-
     }
 }
