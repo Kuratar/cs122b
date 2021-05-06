@@ -51,69 +51,103 @@ public class SearchServlet extends HttpServlet {
                                       String title, String year, String director, String star,
                                       String nMovies, String pageNumber, String sortingOption)
     throws IOException {
-        try {
-            // Generate a SQL query
-            String query = "SELECT distinct movies.id, title, year, director, rating from ratings, movies";
-
-            if (!star.isEmpty())
-
+        boolean[] parameters = {false, false, false, false};
+        // Generate a SQL query
+        String query = "SELECT distinct movies.id, title, year, director, rating from ratings, movies";
+        if (!star.isEmpty())
+        {
+            query += ", stars_in_movies, stars where stars.name like ? and stars_in_movies.movieId = movies.id and stars.id = stars_in_movies.starId";
+            parameters[0] = true;
+        }
+        if (!title.isEmpty())
+        {
+            if (star.isEmpty())
             {
-                query += ", stars_in_movies, stars where stars.name like '%" + star + "%' and stars_in_movies.movieId = movies.id and stars.id = stars_in_movies.starId";
+                query += " where ";
             }
+            else
+            {
+                query += " and ";
+            }
+            query+= "title like ?";
+            parameters[1] = true;
+        }
+        if (!year.isEmpty())
+        {
+            if(title.isEmpty() && star.isEmpty())
+            {
+                query += " where ";
+            }
+            else
+            {
+                query += " and ";
+            }
+            query += "year=?";
+            parameters[2] = true;
+        }
+        if (!director.isEmpty())
+        {
+            if(title.isEmpty() && year.isEmpty() && star.isEmpty())
+            {
+                query += " where ";
+            }
+            else
+            {
+                query += " and ";
+            }
+            query += "director like ?";
+            parameters[3] = true;
+        }
+        query += " and ratings.movieId = movies.id\n";
+        // sorting option if wanted - if none of these selected, return rows as is from database
+        switch (sortingOption) {
+            case "titleRatingASCE": query += "order by title, rating\n";        break;
+            case "titleRatingDESC": query += "order by title desc, rating\n";   break;
+            case "ratingTitleASCE": query += "order by rating, title\n";        break;
+            case "ratingTitleDESC": query += "order by rating desc, title\n";   break;
+        }
+        query += "limit ?\n" +
+                "offset ?";
 
-            if (!title.isEmpty())
-            {
-                if (star.isEmpty())
-                {
-                    query += " where ";
-                }
-                else
-                {
-                    query += " and ";
-                }
-                query+= "title like '%" + title + "%'";
-            }
-            if (!year.isEmpty())
-            {
-                if(title.isEmpty() && star.isEmpty())
-                {
-                    query += " where ";
-                }
-                else
-                {
-                    query += " and ";
-                }
-                query += "year = " + year;
-            }
-            if (!director.isEmpty())
-            {
-                if(title.isEmpty() && year.isEmpty() && star.isEmpty())
-                {
-                    query += " where ";
-                }
-                else
-                {
-                    query += " and ";
-                }
-                query += "director like '%" + director + "%'";
-            }
-            query += " and ratings.movieId = movies.id\n";
-            // sorting option if wanted - if none of these selected, return rows as is from database
-            switch (sortingOption) {
-                case "titleRatingASCE": query += "order by title, rating\n";        break;
-                case "titleRatingDESC": query += "order by title desc, rating\n";   break;
-                case "ratingTitleASCE": query += "order by rating, title\n";        break;
-                case "ratingTitleDESC": query += "order by rating desc, title\n";   break;
-            }
-            query += "limit " + nMovies + "\n" +
-                    // add i to current page number
-                    // the first time, i will be 0 and thus will not change the current page number since even
-                    // pages generate the current page of results and the next
-                    // second time i will be 1 - this makes this query generate the next page of results
-                    "offset " + Integer.parseInt(pageNumber) * Integer.parseInt(nMovies);
+        // get top 3 stars by most movies starred in
+        String query2 = "select s.id, s.name, count(movieId) as movies\n" +
+                "from (\n" +
+                "select stars.id, name\n" +
+                "from stars_in_movies, stars\n" +
+                "where movieId=? and stars.id = stars_in_movies.starId\n" +
+                "order by id\n" +
+                ") as s, stars_in_movies\n" +
+                "where s.id = stars_in_movies.starId\n" +
+                "group by s.id\n" +
+                "order by movies desc\n" +
+                "limit 3";
 
-            // Perform the query
-            PreparedStatement statement = dbCon.prepareStatement(query);
+        // get top 3 genres
+        String query3 = "select genres.id, name\n" +
+                "from genres_in_movies, genres\n" +
+                "where movieId=? and genres.id = genres_in_movies.genreId\n" +
+                "order by name\n" +
+                "limit 3";
+
+        try (PreparedStatement statement = dbCon.prepareStatement(query);
+             PreparedStatement statement2 = dbCon.prepareStatement(query2);
+             PreparedStatement statement3 = dbCon.prepareStatement(query3)) {
+            int counter = 1;
+            for (int i = 0; i < parameters.length; i++) {
+                switch (i) {
+                    case 0:
+                        if (parameters[i]) { statement.setString(counter, '%'+star+'%');     counter++; break; }
+                    case 1:
+                        if (parameters[i]) { statement.setString(counter, '%'+title+'%');    counter++; break;}
+                    case 2:
+                        if (parameters[i]) { statement.setInt(counter, Integer.parseInt(year)); counter++; break;}
+                    case 3:
+                        if (parameters[i]) { statement.setString(counter, '%'+director+'%'); counter++; break;}
+                }
+            }
+            statement.setInt(counter, Integer.parseInt(nMovies));
+            statement.setInt(counter+1, Integer.parseInt(pageNumber) * Integer.parseInt(nMovies));
+
             ResultSet rs = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
@@ -140,19 +174,9 @@ public class SearchServlet extends HttpServlet {
             for (int i = 0; i<jsonArray.size(); i++)
             {
                 JsonObject movie = jsonArray.get(i).getAsJsonObject(); //convert from jsonElement to jsonObject
-                String query2 = "select s.id, s.name, count(movieId) as movies\n" +
-                        "from (\n" +
-                        "select stars.id, name\n" +
-                        "from stars_in_movies, stars\n" +
-                        "where movieId=" + movie.get("movie_id") + " and stars.id = stars_in_movies.starId\n" +
-                        "order by id\n" +
-                        ") as s, stars_in_movies\n" +
-                        "where s.id = stars_in_movies.starId\n" +
-                        "group by s.id\n" +
-                        "order by movies desc\n" +
-                        "limit 3";
+                String movie_id = String.valueOf(movie.get("movie_id"));
+                statement2.setString(1, movie_id.substring(1, movie_id.length()-1));
 
-                PreparedStatement statement2 = dbCon.prepareStatement(query2);
                 ResultSet rstemp = statement2.executeQuery(); //Another resultset to execute 2nd query
                 String stars = "";
                 String starIds = "";
@@ -173,13 +197,9 @@ public class SearchServlet extends HttpServlet {
             for (int i = 0; i<jsonArray.size(); i++)
             {
                 JsonObject movie = jsonArray.get(i).getAsJsonObject();
-                String query3 = "select genres.id, name\n" +
-                        "from genres_in_movies, genres\n" +
-                        "where movieId=" + movie.get("movie_id") + " and genres.id = genres_in_movies.genreId\n" +
-                        "order by name\n" +
-                        "limit 3";
+                String movie_id = String.valueOf(movie.get("movie_id"));
+                statement3.setString(1, movie_id.substring(1, movie_id.length()-1));
 
-                PreparedStatement statement3 = dbCon.prepareStatement(query3);
                 ResultSet rstemp = statement3.executeQuery();
                 String genres = "";
                 String genreIDs = "";
@@ -197,18 +217,20 @@ public class SearchServlet extends HttpServlet {
 
             rs.close();
             statement.close();
+            statement2.close();
+            statement3.close();
             return jsonArray;
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("errorMessage", e.getMessage());
-            out.write(jsonObject.toString());
+            JsonArray errorArray = new JsonArray();
+            jsonObject.addProperty("errorMessage", e.getMessage() + "from generateResults");
+            errorArray.add(jsonObject);
 
             // set response status to 500 (Internal Server Error)
             response.setStatus(500);
+            return errorArray;
         }
-        JsonArray emptyArray = new JsonArray();
-        return emptyArray;
     }
 
     // Use http GET
@@ -271,10 +293,11 @@ public class SearchServlet extends HttpServlet {
             }
             response.setStatus(200);
         } catch (Exception e) {
-
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
+            JsonArray errorArray = new JsonArray();
             jsonObject.addProperty("errorMessage", e.getMessage());
+            errorArray.add(jsonObject);
             out.write(jsonObject.toString());
 
             // set response status to 500 (Internal Server Error)
@@ -283,6 +306,5 @@ public class SearchServlet extends HttpServlet {
             out.close();
         }
         // always remember to close db connection after usage. Here it's done by try-with-resources
-
     }
 }
