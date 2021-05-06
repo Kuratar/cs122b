@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -71,15 +72,14 @@ public class CartServlet extends HttpServlet {
 
         String id = request.getParameter("id");
         String title = "";
-        try (Connection conn = dataSource.getConnection()) {
-            // Declare our statement
-            Statement statement = conn.createStatement();
+        // query to check if user exists within database
+        String userQuery = "select title\n" +
+                "from movies\n" +
+                "where id=?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement statement = conn.prepareStatement(userQuery)) {
 
-            // query to check if user exists within database
-            String userQuery = "select title\n" +
-                    "from movies\n" +
-                    "where id='" + id + "'";
-
+            statement.setString(1, id);
             // Perform check user query
             ResultSet rs = statement.executeQuery(userQuery);
 
@@ -99,7 +99,6 @@ public class CartServlet extends HttpServlet {
             // set response status to 500 (Internal Server Error)
             response.setStatus(500);
         }
-        System.out.println(title);
         HttpSession session = request.getSession();
 
         HashMap<String, Integer> previousItems = (HashMap<String, Integer>) session.getAttribute("previousItems");
@@ -111,7 +110,6 @@ public class CartServlet extends HttpServlet {
         } else {
             // prevent corrupted states through sharing under multi-threads
             // will only be executed by one thread at a time
-            System.out.println("In else statement");
             synchronized (previousItems) {
                 if (previousItems.containsKey(title))
                 {
