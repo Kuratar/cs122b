@@ -36,35 +36,31 @@ public class SingleStarServlet extends HttpServlet {
      * response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         response.setContentType("application/json; charset=utf-8"); // Response mime type
-
         // Retrieve parameter id from url request.
         String id = request.getParameter("id");
-
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
+        String query = "select name, birthYear\n" +
+                "from stars\n" +
+                "where id=?";
+
+        String query2 = "select id, title, director, year\n" +
+                "from movies, stars_in_movies\n" +
+                "where stars_in_movies.starId=? and " +
+                "stars_in_movies.movieId = movies.id\n" +
+                "order by year desc, title";
+
         // Get a connection from dataSource and let resource manager close the connection after usage.
-        try (Connection conn = dataSource.getConnection()) {
-            // Get a connection from dataSource
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement statement = conn.prepareStatement(query);
+             PreparedStatement statement2 = conn.prepareStatement(query2)) {
 
-            // Construct a query with parameter represented by "?"
-            String query = "select name, birthYear\n" +
-                    "from stars\n" +
-                    "where id='" + id + "'";
-            // Declare our statement
-            PreparedStatement statement = conn.prepareStatement(query);
-
-            // Perform the query
+            statement.setString(1, id);
             ResultSet rs = statement.executeQuery();
 
-            String query2 = "select id, title, director, year\n" +
-                    "from movies, stars_in_movies\n" +
-                    "where stars_in_movies.starId='" + id + "' and " +
-                    "stars_in_movies.movieId = movies.id\n" +
-                    "order by year desc, title";
-            PreparedStatement statement2 = conn.prepareStatement(query2);
+            statement2.setString(1, id);
             ResultSet rs2 = statement2.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
@@ -77,14 +73,12 @@ public class SingleStarServlet extends HttpServlet {
 
             // Iterate through each row of rs2
             while (rs2.next()) {
-
                 String movieId = rs2.getString("id");
                 String movieTitle = rs2.getString("title");
                 String movieYear = rs2.getString("year");
                 String movieDirector = rs2.getString("director");
 
                 // Create a JsonObject based on the data we retrieve from rs
-
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("star_name", starName);
                 jsonObject.addProperty("star_dob", starDob);
@@ -104,7 +98,6 @@ public class SingleStarServlet extends HttpServlet {
             out.write(jsonArray.toString());
             // set response status to 200 (OK)
             response.setStatus(200);
-
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
@@ -116,10 +109,6 @@ public class SingleStarServlet extends HttpServlet {
         } finally {
             out.close();
         }
-
         // always remember to close db connection after usage. Here it's done by try-with-resources
-
-
     }
-
 }
