@@ -81,7 +81,7 @@ public class CartServlet extends HttpServlet {
 
             statement.setString(1, id);
             // Perform check user query
-            ResultSet rs = statement.executeQuery(userQuery);
+            ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
                 title = rs.getString("title");
