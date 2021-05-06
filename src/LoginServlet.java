@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import org.jasypt.util.password.PasswordEncryptor;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 
 @WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
 public class LoginServlet extends HttpServlet {
@@ -37,33 +38,38 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         // query to check if user exists within database
-        String userQuery = "select id, firstName, lastName, ccId, address\n" +
+        String userQuery = "select *\n" +
                 "from customers\n" +
-                "where email=? and password=?";
+                "where email=?";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement statement = conn.prepareStatement(userQuery)) {
             JsonObject responseJsonObject = new JsonObject();
 
             statement.setString(1, email);
-            statement.setString(2, password);
 
             // Perform check user query
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                // login success
-                int userId = rs.getInt("id");
-                String firstName = rs.getString("firstName");
-                String lastName = rs.getString("lastName");
-                int ccId = rs.getInt("ccId");
-                String address = rs.getString("address");
+                String encryptedPassword = rs.getString("password");
+                if (new StrongPasswordEncryptor().checkPassword(password, encryptedPassword)) {
+                    int userId = rs.getInt("id");
+                    String firstName = rs.getString("firstName");
+                    String lastName = rs.getString("lastName");
+                    int ccId = rs.getInt("ccId");
+                    String address = rs.getString("address");
 
-                request.getSession().setAttribute("user", new User(userId, firstName, lastName, ccId, address));
-                responseJsonObject.addProperty("status", "success");
-                responseJsonObject.addProperty("message", "success");
-
+                    request.getSession().setAttribute("user", new User(userId, firstName, lastName, ccId, address));
+                    responseJsonObject.addProperty("status", "success");
+                    responseJsonObject.addProperty("message", "success");
+                }
+                else {
+                    // wrong password
+                    responseJsonObject.addProperty("status", "fail");
+                    responseJsonObject.addProperty("message", "Incorrect email or password");
+                }
             } else {
-                // login fail
+                // wrong email
                 responseJsonObject.addProperty("status", "fail");
                 responseJsonObject.addProperty("message", "Incorrect email or password");
             }
