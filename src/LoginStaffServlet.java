@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.midi.SysexMessage;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -37,6 +38,7 @@ public class LoginStaffServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         PrintWriter out = response.getWriter();
         String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+        System.out.println(gRecaptchaResponse);
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
@@ -74,7 +76,7 @@ public class LoginStaffServlet extends HttpServlet {
                     String staffEmail = rs.getString("email");
                     String fullName = rs.getString("fullname");
 
-                    request.getSession().setAttribute("user", new Employee(staffEmail, fullName));
+                    request.getSession().setAttribute("employee", new Employee(staffEmail, fullName));
                     responseJsonObject.addProperty("status", "success");
                     responseJsonObject.addProperty("message", "success");
                 }
