@@ -16,8 +16,8 @@ import java.sql.ResultSet;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
-@WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "LoginStaffServlet", urlPatterns = "/api/loginStaff")
+public class LoginStaffServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Create a dataSource which registered in web.
@@ -55,9 +55,9 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // query to check if user exists within database
+        // query to check if staff exists within database
         String userQuery = "select *\n" +
-                "from customers\n" +
+                "from employees\n" +
                 "where email=?";
 
         try (Connection conn = dataSource.getConnection();
@@ -71,13 +71,10 @@ public class LoginServlet extends HttpServlet {
             if (rs.next()) {
                 String encryptedPassword = rs.getString("password");
                 if (new StrongPasswordEncryptor().checkPassword(password, encryptedPassword)) {
-                    int userId = rs.getInt("id");
-                    String firstName = rs.getString("firstName");
-                    String lastName = rs.getString("lastName");
-                    int ccId = rs.getInt("ccId");
-                    String address = rs.getString("address");
+                    String staffEmail = rs.getString("email");
+                    String fullName = rs.getString("fullname");
 
-                    request.getSession().setAttribute("user", new User(userId, firstName, lastName, ccId, address));
+                    request.getSession().setAttribute("user", new Employee(staffEmail, fullName));
                     responseJsonObject.addProperty("status", "success");
                     responseJsonObject.addProperty("message", "success");
                 }
