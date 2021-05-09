@@ -21,13 +21,13 @@ function getParameterByName(target) {
 
 
 function insertStar() {
+    console.log("insertStar function: setting up for servlet call");
     let star_form = $("#star_form");
     let starName = getParameterByName("name");
     let birthYear = getParameterByName("birth_year");
     jQuery.ajax({
         dataType: "json", // Setting return data type
         method: "GET", // Setting request method
-        //url: "api/insert-star?name=" + starName + "&birthYear=" + birthYear, // Setting request url, which is mapped by MoviesServlet in Movies.java
         url: "api/insert-star?" + star_form.serialize(),
         success: (resultData) => handleInsertStarResult(resultData) // Setting callback function to handle data returned successfully by the MoviesServlet
     });
@@ -58,6 +58,6 @@ function insertMovie() {
 
 
 function showMetadata() {
-
+    console.log("showMetadata: setting up for servlet call");
     return false;
 }
