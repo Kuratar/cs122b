@@ -55,3 +55,9 @@ function insertMovie() {
 
     return false;
 }
+
+
+function showMetadata() {
+
+    return false;
+}
