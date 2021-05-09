@@ -16,8 +16,8 @@ import java.sql.ResultSet;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
-@WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "LoginStaffServlet", urlPatterns = "/api/loginStaff")
+public class LoginStaffServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Create a dataSource which registered in web.
@@ -35,6 +35,7 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        PrintWriter out = response.getWriter();
         String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
@@ -42,17 +43,21 @@ public class LoginServlet extends HttpServlet {
         try {
             RecaptchaVerifyUtils.verify(gRecaptchaResponse);
         } catch (Exception e) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("recaptcha", "fail");
-            jsonObject.addProperty("recaptcha-message", "Recaptcha verification error, please try again.");
-            response.getWriter().write(jsonObject.toString());
+            out.println("<html>");
+            out.println("<head><title>Error</title></head>");
+            out.println("<body>");
+            out.println("<p>recaptcha verification error</p>");
+            out.println("<p>" + e.getMessage() + "</p>");
+            out.println("</body>");
+            out.println("</html>");
 
+            out.close();
             return;
         }
 
-        // query to check if user exists within database
+        // query to check if staff exists within database
         String userQuery = "select *\n" +
-                "from customers\n" +
+                "from employees\n" +
                 "where email=?";
 
         try (Connection conn = dataSource.getConnection();
@@ -66,13 +71,10 @@ public class LoginServlet extends HttpServlet {
             if (rs.next()) {
                 String encryptedPassword = rs.getString("password");
                 if (new StrongPasswordEncryptor().checkPassword(password, encryptedPassword)) {
-                    int userId = rs.getInt("id");
-                    String firstName = rs.getString("firstName");
-                    String lastName = rs.getString("lastName");
-                    int ccId = rs.getInt("ccId");
-                    String address = rs.getString("address");
+                    String staffEmail = rs.getString("email");
+                    String fullName = rs.getString("fullname");
 
-                    request.getSession().setAttribute("user", new User(userId, firstName, lastName, ccId, address));
+                    request.getSession().setAttribute("employee", new Employee(staffEmail, fullName));
                     responseJsonObject.addProperty("status", "success");
                     responseJsonObject.addProperty("message", "success");
                 }

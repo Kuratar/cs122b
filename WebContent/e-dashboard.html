@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Staff Dashboard</title>
+</head>
+<body>
+<h1 ALIGN="CENTER">Staff Dashboard</h1>
+<br>
+
+<form style="font-size: x-large" id="metadata" onsubmit="return showMetadata()">
+    <input type="submit" value="Show Database Metadata">
+</form>
+<br>
+
+<h2>Insert a New Star</h2>
+<form id="star_form" method="get" onsubmit="return insertStar()">
+    <label style="font-size: x-large"><b>Star Name</b></label>
+    <label>
+        <input name="name" placeholder="Enter Name of Star" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <label style="font-size: x-large"><b>Birth Year (Optional)</b></label>
+    <label>
+        <input name="birth_year" placeholder="Enter Birth Year of Star" type="number" style="font-size: x-large">
+    </label>
+    <br>
+    <input type="submit" value="Insert Star" style="font-size: x-large">
+</form>
+<br>
+
+<div id="star_form_message" style="font-size: x-large"></div>
+<br>
+
+<h2>Insert a New Movie</h2>
+<form id="movie_form" method="get" onsubmit="return insertMovie()">
+    <label style="font-size: x-large"><b>Movie Title</b></label>
+    <label>
+        <input name="title" placeholder="Enter Title of Movie" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <label style="font-size: x-large"><b>Release Year</b></label>
+    <label>
+        <input name="release_year" placeholder="Enter Release Year of Movie" type="number" style="font-size: x-large">
+    </label>
+    <br>
+    <label style="font-size: x-large"><b>Director</b></label>
+    <label>
+        <input name="director" placeholder="Enter Director of Movie" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <label style="font-size: x-large"><b>A Star</b></label>
+    <label>
+        <input name="star_name" placeholder="Enter a Star Name" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <label style="font-size: x-large"><b>A Genre</b></label>
+    <label>
+        <input name="genre" placeholder="Enter a Genre" type="text" style="font-size: x-large">
+    </label>
+    <br>
+    <input type="submit" value="Insert Movie" style="font-size: x-large">
+</form>
+<br>
+
+<div id="movie_form_message"></div>
+<br>
+
+
+<!-- Load jQuery and Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- Load our own JS file -->
+<!-- The path is relative to login.html, since these two files are in the same directory -->
+<!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
+     otherwise the url is relative to the root path-->
+<script src="e-dashboard.js"></script>
+</body>
+
+
+</html>
