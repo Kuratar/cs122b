@@ -35,7 +35,6 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        PrintWriter out = response.getWriter();
         String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
         System.out.println("gRecaptchaResponse=" + gRecaptchaResponse);
         String email = request.getParameter("email");
@@ -44,15 +43,11 @@ public class LoginServlet extends HttpServlet {
         try {
             RecaptchaVerifyUtils.verify(gRecaptchaResponse);
         } catch (Exception e) {
-            out.println("<html>");
-            out.println("<head><title>Error</title></head>");
-            out.println("<body>");
-            out.println("<p>recaptcha verification error</p>");
-            out.println("<p>" + e.getMessage() + "</p>");
-            out.println("</body>");
-            out.println("</html>");
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("recaptcha", "fail");
+            jsonObject.addProperty("recaptcha-message", "Recaptcha verification error, please try again.");
+            response.getWriter().write(jsonObject.toString());
 
-            out.close();
             return;
         }
 
