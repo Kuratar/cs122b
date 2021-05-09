@@ -20,6 +20,43 @@ function getParameterByName(target) {
 }
 
 
+function showMetadata() {
+    console.log("showMetadata: setting up for servlet call");
+    jQuery.ajax({
+        dataType: "json", // Setting return data type
+        method: "GET", // Setting request method
+        url: "api/metadata",
+        success: (resultData) => handleMetadataResult(resultData) // Setting callback function to handle data returned successfully by the MoviesServlet
+    });
+    return false;
+}
+
+
+function handleMetadataResult(resultData) {
+    console.log("handle show metadata response");
+    let databaseNameElement = jQuery("#database_name");
+    if (window.document.getElementById("database_name").textContent === "") {
+        databaseNameElement.append("<p>Database: moviedbexample</p>");
+    } else { return; }
+
+    let dbTablesElement = jQuery("#db_tables");
+    for (let i = 0; i < resultData.length; i++) {
+        let tableHTML = "<pre>";
+        // name of table
+        tableHTML += resultData[i]["name"] + "";
+        // get array of attributes and store into variable
+        let attributes = resultData[i]["attributes"];
+        console.log(attributes);
+        for (let j = 0; j < attributes.length; j++) {
+            // each line under table name = "    field: type"
+            tableHTML += "\n    " + attributes[j]["field"] + " " + attributes[j]["type"];
+        }
+        tableHTML += "</pre>";
+        dbTablesElement.append(tableHTML);
+    }
+}
+
+
 function insertStar() {
     console.log("insertStar function: setting up for servlet call");
     let star_form = $("#star_form");
@@ -53,11 +90,5 @@ function handleInsertStarResult(resultData) {
 
 function insertMovie() {
 
-    return false;
-}
-
-
-function showMetadata() {
-    console.log("showMetadata: setting up for servlet call");
     return false;
 }

@@ -16,9 +16,12 @@
 <h1 ALIGN="CENTER">Staff Dashboard</h1>
 <br>
 
-<form style="font-size: x-large" id="metadata" onsubmit="return showMetadata()">
+<form style="font-size: x-large" id="metadata" method="get" onsubmit="return showMetadata()">
     <input type="submit" value="Show Database Metadata">
 </form>
+<br>
+<h2 id="database_name"></h2>
+<label id="db_tables" style="font-size: x-large"></label>
 <br>
 
 <h2>Insert a New Star</h2>
