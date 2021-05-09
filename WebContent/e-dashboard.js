@@ -60,8 +60,6 @@ function handleMetadataResult(resultData) {
 function insertStar() {
     console.log("insertStar function: setting up for servlet call");
     let star_form = $("#star_form");
-    let starName = getParameterByName("name");
-    let birthYear = getParameterByName("birth_year");
     jQuery.ajax({
         dataType: "json", // Setting return data type
         method: "GET", // Setting request method
@@ -89,6 +87,46 @@ function handleInsertStarResult(resultData) {
 
 
 function insertMovie() {
-
+    console.log("insertMovie function: setting up for procedure servlet call");
+    let movie_form = $("#movie_form");
+    jQuery.ajax({
+        dataType: "json", // Setting return data type
+        method: "GET", // Setting request method
+        url: "api/check-movie?" + movie_form.serialize(),
+        success: (resultData) => handleCheckMovieResult(resultData) // Setting callback function to handle data returned successfully by the MoviesServlet
+    });
     return false;
+}
+
+
+function handleCheckMovieResult(resultData) {
+    console.log("handle insert movie response, setting up for insert into database");
+    if (resultData["movieExists"] === 1) {
+        alert("Movie already exists within database, no insert performed");
+    }
+    else {
+        alert("Adding new movie to database");
+        if (resultData["starExists"] === "-1") {
+            alert("Adding new star to database and linking star to movie");
+        }
+        else {
+            alert("Star already exists within database, linking star to movie");
+        }
+        if (resultData["genreExists"] === -1) {
+            alert("Adding new genre to database and linking genre to movie");
+        }
+        else {
+            alert("Genre already exists within database, linking genre to movie");
+        }
+        jQuery.ajax({
+            dataType: "json", // Setting return data type
+            method: "GET", // Setting request method
+            url: "api/insert-movie?title=" + resultData["title"] + "&releaseYear=" + resultData["releaseYear"] +
+            "&director=" + resultData["director"] + "&starName=" + resultData["starName"] +
+            "&genreName=" + resultData["genreName"] + "&starExists=" + resultData["starExists"] +
+            "&genreExists=" + resultData["genreExists"].toString(),
+            success: (resultData2) => alert(resultData2["message"]),
+            error: (resultData2) => alert(resultData2["errorMessage"])
+        });
+    }
 }
