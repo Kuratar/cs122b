@@ -78,7 +78,7 @@ public class MovieParser{
         String title = getTextValue(element, "t");
         int year = getIntValue(element, "year");
         String director = getTextValue(element, "dirn");
-        String genres = getGenres(element);
+        String genres = convertGenres(getGenres(element));
 
         // create a new Employee with the value read from the xml nodes
         return new Movie(id, title, year, director, genres);
@@ -132,6 +132,69 @@ public class MovieParser{
         return 0;
     }
 
+    private String convertGenres(String genres) {
+        String result = "";
+
+        for (String genre: genres.split(","))
+        {
+            switch (genre){
+                case "Actn":
+                    result += "Action,";
+                    break;
+                case "Cart":
+                    result += "Animation";
+                    break;
+                case "Advt":
+                    result += "Adventure,";
+                    break;
+                case "BioP":
+                    result += "Biography,";
+                    break;
+                case "Comd":
+                    result += "Comedy,";
+                    break;
+                case "Docu":
+                    result += "Documentary,";
+                    break;
+                case "Dram":
+                    result += "Drama,";
+                    break;
+                case "Faml":
+                    result += "Family,";
+                    break;
+                case "Fant":
+                    result += "Fantasy";
+                case "Hist":
+                    result += "History";
+                    break;
+                case "Horr":
+                    result += "Horror,";
+                    break;
+                case "Musc":
+                    result += "Musical,";
+                    break;
+                case "Myst":
+                    result += "Mystery,";
+                    break;
+                case "Romt":
+                    result += "Romance,";
+                    break;
+                case "S.F.":
+                    result += "Sci-Fi,";
+                    break;
+                case "Susp":
+                    result += "Thriller,";
+                    break;
+                case "West":
+                    result += "Western,";
+                    break;
+                default:
+                    result += genre + ",";
+            }
+        }
+        result = result.replaceAll(",$", "");
+        return result;
+    }
     /**
      * Iterate through the list and print the
      * content to console
