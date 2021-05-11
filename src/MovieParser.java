@@ -116,7 +116,7 @@ public class MovieParser{
 //                        sqlFile.write("INSERT INTO movies VALUES(\"" + movie.getTitle() + "\"," + movie.getYear() + ",\"" +
 //                                movie.getDirector() + "\");\n");
                         sqlFile.write(String.format("INSERT INTO movies VALUES(\"%s\",\"%s\",%d,\"%s\");\n",
-                        "tt"+highestID+1,movie.getTitle(),movie.getYear(),movie.getDirector()));
+                        "tt"+(highestID+1),movie.getTitle(),movie.getYear(),movie.getDirector()));
                         highestID++;
                         databaseMovies.add(info);
                     }
