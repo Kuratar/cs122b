@@ -115,7 +115,6 @@ public class StarsinMoviesParser{
 
                 // get the Employee object
                 StarsinMovies s = parseMovie(element);
-                System.out.println(s.getMovieId() + s.getStarName());
 
                 // add it to list
                 try {
@@ -184,6 +183,9 @@ public class StarsinMoviesParser{
             sqlFile.write("COMMIT;");
             sqlFile.close();
             inconsistencies.close();
+            System.out.println("Finished parsing casts124.xml\n" +
+                               "queries are in casts124Inserts.sql\n" +
+                               "inconsistencies in starMoviesInconsistencies.txt");
         } catch (Exception e) {
             System.out.println("error writing to file:" + e.getMessage());
         }

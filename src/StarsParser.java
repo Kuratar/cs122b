@@ -205,6 +205,9 @@ public class StarsParser{
             sqlFile.write("COMMIT;");
             sqlFile.close();
             inconsistencies.close();
+            System.out.println("Finished parsing actors63.xml\n" +
+                               "queries are in actors63Inserts.sql\n" +
+                               "inconsistencies in starInconsistencies.txt");
         } catch (Exception e) {
             System.out.println("error writing to file:" + e.getMessage());
         }

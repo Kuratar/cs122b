@@ -312,6 +312,10 @@ public class MovieParser{
             sqlFileGenre.write("COMMIT;");
             sqlFileGenre.close();
             inconsistencies.close();
+            System.out.println("Finished parsing mains243.xml\n" +
+                               "movie queries are in mains243Inserts.sql\n" +
+                               "genre and genres_in_movies queries are in mains243Genres.sql\n" +
+                               "inconsistencies in movieInconsistencies.txt");
         } catch (Exception e) {
             System.out.println("error writing to file:" + e.getMessage());
         }
