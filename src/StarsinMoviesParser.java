@@ -6,26 +6,82 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class StarsinMoviesParser{
 
     List<StarsinMovies> slist = new ArrayList<>();
+    HashSet<String> databaseMovieIds = new HashSet<>();
+    HashMap<String, String> databaseStars = new HashMap<>();
     Document dom;
+    FileWriter inconsistencies;
+    FileWriter sqlFile;
+    int highestID;
+
+    public StarsinMoviesParser() {
+        try {
+            inconsistencies = new FileWriter("movieInconsistencies.txt");
+            sqlFile = new FileWriter("casts124Inserts.sql");
+            sqlFile.write("USE moviedbexample;\n" +
+                    "BEGIN;\n");
+            highestID = -1;
+        } catch (Exception e) {
+            System.out.println("error from creating file: " + e.getMessage());
+        }
+    }
 
     public void runExample() {
 
         // parse the xml file and get the dom object
         parseXmlFile();
 
+        loadDatabaseMovieIds();
         // get each employee element and create a Employee object
         parseDocument();
 
         // iterate through the list and print the data
         printData();
 
+    }
+    public void loadDatabaseMovieIds() {
+        String query = "select movieId from stars_in_movies";
+        String query2 = "select name,id from stars";
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+            Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false",
+                    "mytestuser", "Nonie127");
+            PreparedStatement statement = conn.prepareStatement(query);
+            PreparedStatement statement2 = conn.prepareStatement(query2);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next())
+            {
+                databaseMovieIds.add(rs.getString("movieId"));
+            }
+            ResultSet rs2 = statement2.executeQuery();
+            while (rs2.next())
+            {
+                databaseStars.put(rs2.getString("name"), rs2.getString("id"));
+            }
+            conn.close();
+            rs.close();
+            rs2.close();
+            statement.close();
+            statement2.close();
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+
+        }
     }
 
     private void parseXmlFile() {
@@ -59,9 +115,22 @@ public class StarsinMoviesParser{
 
                 // get the Employee object
                 StarsinMovies s = parseMovie(element);
+                System.out.println(s.getMovieId() + s.getStarName());
 
                 // add it to list
-                slist.add(s);
+                try {
+                    if (databaseMovieIds.contains(s.getMovieId()) && databaseStars.containsKey(s.getStarName())) {
+//                        sqlFile.write("INSERT INTO movies VALUES(\"" + movie.getTitle() + "\"," + movie.getYear() + ",\"" +
+//                                movie.getDirector() + "\");\n");
+                        sqlFile.write(String.format("INSERT INTO movies VALUES(\"%s\",\"%s\");\n",
+                                s.getMovieId(), databaseStars.get(s.getStarName())));
+                    } else {
+                        inconsistencies.write("Movie ID: " + s.getMovieId() + "\n" +
+                                "Star Name:        " + s.getStarName() + "\n" + "\n\n");
+                    }
+                } catch (Exception e) {
+                    System.out.println("error writing to file: " + e.getMessage());
+                }
             }
         }
     }
@@ -109,10 +178,12 @@ public class StarsinMoviesParser{
      */
     private void printData() {
 
-        System.out.println("Total parsed " + slist.size() + " movies");
-
-        for (StarsinMovies s : slist) {
-            System.out.println("\t" + s.toString());
+        try {
+            sqlFile.write("COMMIT;");
+            sqlFile.close();
+            inconsistencies.close();
+        } catch (Exception e) {
+            System.out.println("error writing to file:" + e.getMessage());
         }
     }
 
