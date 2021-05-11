@@ -136,7 +136,7 @@ public class MovieParser{
                     if (!databaseMovies.contains(info))
                     {
                         sqlFile.write(String.format("INSERT INTO movies VALUES(\"%s\",\"%s\",%d,\"%s\");\n",
-                        "tt"+(highestID+1),movie.getTitle(),movie.getYear(),movie.getDirector()));
+                        movie.getId(),movie.getTitle(),movie.getYear(),movie.getDirector()));
                         databaseMovies.add(info);
 
                         // create genre queries
@@ -147,17 +147,15 @@ public class MovieParser{
                                         highestGenre+1, genre.trim().substring(0,1).toUpperCase() + genre.trim().substring(1)));
                                     databaseGenres.put(genre.trim().toLowerCase(),highestGenre+1);
                                     sqlFileGenre.write(String.format("INSERT into genres_in_movies VALUES(%d,\"%s\");\n",
-                                        highestGenre+1,"tt"+(highestID+1)));
+                                        highestGenre+1,movie.getId()));
                                     highestGenre++;
                                 }
                                 else {
                                     sqlFileGenre.write(String.format("INSERT into genres_in_movies VALUES(%d,\"%s\");\n",
-                                        databaseGenres.get(genre.trim().toLowerCase()),"tt"+(highestID+1)));
+                                        databaseGenres.get(genre.trim().toLowerCase()),movie.getId()));
                                 }
                             }
                         }
-
-                        highestID++;
                     }
                     else {
                         inconsistencies.write("Movie Title: " + movie.getTitle() + "\n" +
