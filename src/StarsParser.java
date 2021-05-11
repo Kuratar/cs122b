@@ -6,26 +6,80 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class StarsParser{
 
     List<Stars> slist = new ArrayList<>();
+    HashSet<String> databaseStars = new HashSet<>();
     Document dom;
+    FileWriter inconsistencies;
+    FileWriter sqlFile;
+    int highestID;
+
+
+    public StarsParser() {
+        try {
+            inconsistencies = new FileWriter("movieInconsistencies.txt");
+            sqlFile = new FileWriter("actors63Inserts.sql");
+            sqlFile.write("USE moviedbexample;\n" +
+                    "BEGIN;\n");
+            highestID = -1;
+        } catch (Exception e) {
+            System.out.println("error from creating file: " + e.getMessage());
+        }
+    }
 
     public void runExample() {
 
         // parse the xml file and get the dom object
         parseXmlFile();
 
+        loadDatabaseStars();
         // get each employee element and create a Employee object
         parseDocument();
 
         // iterate through the list and print the data
         printData();
 
+    }
+
+    public void loadDatabaseStars() {
+        String query = "select name,birthYear from stars";
+        String query2 = "select max(id) from stars";
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+            Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false",
+                    "mytestuser", "Nonie127");
+            PreparedStatement statement = conn.prepareStatement(query);
+            PreparedStatement statement2 = conn.prepareStatement(query2);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next())
+            {
+                String info = "";
+                info += rs.getString("name") + rs.getString("birthYear");
+                databaseStars.add(info);
+            }
+            ResultSet rs2 = statement2.executeQuery(); rs2.next();
+            highestID = Integer.parseInt(rs2.getString("max(id)").substring(2));
+
+            conn.close();
+            rs.close();
+            statement.close();
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+
+        }
     }
 
     private void parseXmlFile() {
@@ -60,8 +114,23 @@ public class StarsParser{
                 // get the Employee object
                 Stars s = parseStar(element);
 
+                String info = s.getName() + s.getBirthYear();
                 // add it to list
-                slist.add(s);
+                try {
+                    if (!databaseStars.contains(info)) {
+//                        sqlFile.write("INSERT INTO movies VALUES(\"" + movie.getTitle() + "\"," + movie.getYear() + ",\"" +
+//                                movie.getDirector() + "\");\n");
+                        sqlFile.write(String.format("INSERT INTO movies VALUES(\"%s\",\"%s\",%d);\n",
+                                "tt" + highestID + 1, s.getName(), s.getBirthYear()));
+                        highestID++;
+                        databaseStars.add(info);
+                    } else {
+                        inconsistencies.write("Star Name: " + s.getName() + "\n" +
+                                "Star DOB:        " + s.getBirthYear() + "\n" + "\n\n");
+                    }
+                } catch (Exception e) {
+                    System.out.println("error writing to file: " + e.getMessage());
+                }
             }
         }
     }
@@ -120,11 +189,12 @@ public class StarsParser{
      * content to console
      */
     private void printData() {
-
-        System.out.println("Total parsed " + slist.size() + " movies");
-
-        for (Stars s : slist) {
-            System.out.println("\t" + s.toString());
+        try {
+            sqlFile.write("COMMIT;");
+            sqlFile.close();
+            inconsistencies.close();
+        } catch (Exception e) {
+            System.out.println("error writing to file:" + e.getMessage());
         }
     }
 
@@ -137,4 +207,3 @@ public class StarsParser{
     }
 
 }
-
