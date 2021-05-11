@@ -63,36 +63,45 @@ public class InsertMovieServlet extends HttpServlet {
             statement2.setString(2, title);
             statement2.setInt(3, Integer.parseInt(releaseYear));
             statement2.setString(4, director);
-            statement2.executeUpdate();
+            //statement2.executeUpdate();
 
             if (starExists.equals("-1")) {
                 statement3.setString(1, "nm"+starId);
                 statement3.setString(2, starName);
                 statement5.setString(1,"nm"+starId);
-                statement3.executeUpdate();
+                //statement3.executeUpdate();
+                jsonObject.addProperty("starId", "nm"+starId);
+                jsonObject.addProperty("starExists", "0");
             }
             else {
                 statement5.setString(1, starExists);
+                jsonObject.addProperty("starId", starExists);
+                jsonObject.addProperty("starExists", "1");
             }
             statement5.setString(2, "tt"+movieId);
-            statement5.executeUpdate();
+            //statement5.executeUpdate();
 
             if (genreExists.equals("-1")) {
                 statement4.setInt(1, genreId);
                 statement4.setString(2, genreName);
                 statement6.setInt(1, genreId);
-                statement4.executeUpdate();
+               // statement4.executeUpdate();
+                jsonObject.addProperty("genreId", genreId);
+                jsonObject.addProperty("genreExists", "0");
             }
             else {
                 statement6.setInt(1, Integer.parseInt(genreExists));
+                jsonObject.addProperty("genreId", genreExists);
+                jsonObject.addProperty("genreExists", "1");
             }
             statement6.setString(2, "tt"+movieId);
-            statement6.executeUpdate();
+            //statement6.executeUpdate();
 
             conn.commit();
 
             jsonObject.addProperty("status", "success");
             jsonObject.addProperty("message", "Successfully added new movie");
+            jsonObject.addProperty("movieId", "tt"+movieId);
 
             rs.close();
             statement.close();

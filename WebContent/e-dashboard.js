@@ -125,8 +125,28 @@ function handleCheckMovieResult(resultData) {
             "&director=" + resultData["director"] + "&starName=" + resultData["starName"] +
             "&genreName=" + resultData["genreName"] + "&starExists=" + resultData["starExists"] +
             "&genreExists=" + resultData["genreExists"].toString(),
-            success: (resultData2) => alert(resultData2["message"]),
+            success: (resultData2) => handleInsertMovieResult(resultData2),
             error: (resultData2) => alert(resultData2["errorMessage"])
         });
     }
+}
+
+
+function handleInsertMovieResult(resultData2) {
+    console.log(resultData2["starId"]);
+    console.log(resultData2["genreId"]);
+    let resultString = resultData2["message"] + "with ID " + resultData2["movieId"] + ", ";
+    if (resultData2["starExists"] === "1") {
+        resultString += "existing star ID " + resultData2["starId"] + ", ";
+    }
+    else {
+        resultString += "new star ID " + resultData2["starId"] + ", ";
+    }
+    if (resultData2["genreExists"] === "1") {
+        resultString += "existing genre ID " + resultData2["genreId"];
+    }
+    else {
+        resultString += "new genre ID " + resultData2["genreId"];
+    }
+    alert(resultString);
 }
