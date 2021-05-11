@@ -50,7 +50,7 @@ public class InsertStarServlet extends HttpServlet {
             statement2.setString(2, name);
             if (birthYear.equals("")) { statement2.setString(3, null); }
             else { statement2.setInt(3, Integer.parseInt(birthYear)); }
-            //statement2.executeUpdate();
+            statement2.executeUpdate();
 
             jsonObject.addProperty("status", "success");
             jsonObject.addProperty("message", "Successfully added new star "+"nm"+(maxId+1));
