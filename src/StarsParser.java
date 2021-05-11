@@ -120,7 +120,7 @@ public class StarsParser{
                     if (!databaseStars.contains(info)) {
 //                        sqlFile.write("INSERT INTO movies VALUES(\"" + movie.getTitle() + "\"," + movie.getYear() + ",\"" +
 //                                movie.getDirector() + "\");\n");
-                        sqlFile.write(String.format("INSERT INTO movies VALUES(\"%s\",\"%s\",%d);\n",
+                        sqlFile.write(String.format("INSERT INTO stars VALUES(\"%s\",\"%s\",%d);\n",
                                 "tt" + highestID + 1, s.getName(), s.getBirthYear()));
                         highestID++;
                         databaseStars.add(info);
