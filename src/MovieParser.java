@@ -6,22 +6,66 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class MovieParser{
 
     List<Movie> movies = new ArrayList<>();
+    HashSet<String> databaseMovies = new HashSet<>();
+    FileWriter inconsistencies;
+    FileWriter sqlFile;
     Document dom;
+
+    public MovieParser() {
+        try {
+            inconsistencies = new FileWriter("movieInconsistencies.txt");
+            sqlFile = new FileWriter("mains243Inserts.sql");
+            sqlFile.write("USE moviedbexample;\n" +
+                    "BEGIN;\n");
+        } catch (Exception e) {
+            System.out.println("error from creating file: " + e.getMessage());
+        }
+    }
+
+    public void loadDatabaseMovies() {
+        String query = "select title,year,director from movies";
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+            Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true",
+                    "mytestuser", "My6$Password");
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next())
+            {
+                String info = "";
+                info += rs.getString("title") + rs.getString("year") + rs.getString("director");
+                databaseMovies.add(info);
+            }
+            rs.close();
+            statement.close();
+            conn.close();
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     public void runExample() {
 
         // parse the xml file and get the dom object
         parseXmlFile();
 
+        loadDatabaseMovies();
+
         // get each employee element and create a Employee object
         parseDocument();
+
 
         // iterate through the list and print the data
         printData();
@@ -60,8 +104,25 @@ public class MovieParser{
                 // get the Employee object
                 Movie movie = parseMovie(element);
 
+                String info = movie.getTitle() + movie.getYear() + movie.getDirector();
                 // add it to list
-                movies.add(movie);
+                try {
+                    if (!databaseMovies.contains(info))
+                    {
+                        //movies.add(movie);
+                        sqlFile.write("INSERT INTO movies VALUES(\"" + movie.getTitle() + "\"," + movie.getYear() + ",\"" +
+                                movie.getDirector() + "\");\n");
+                        //sqlFile.flush();
+                        databaseMovies.add(info);
+                    }
+                    else {
+                        inconsistencies.write("Movie Title: " + movie.getTitle() + "\n" +
+                                "Year:        " + movie.getYear() + "\n" +
+                                "Director:    " + movie.getDirector()+ "\n\n");
+                    }
+                } catch (Exception e) {
+                    System.out.println("error writing to file: " + e.getMessage());
+                }
             }
         }
     }
@@ -200,6 +261,13 @@ public class MovieParser{
      * content to console
      */
     private void printData() {
+        try {
+            sqlFile.write("COMMIT;");
+            sqlFile.close();
+            inconsistencies.close();
+        } catch (Exception e) {
+            System.out.println("error writing to file:" + e.getMessage());
+        }
 
         System.out.println("Total parsed " + movies.size() + " movies");
 
