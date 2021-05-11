@@ -4,7 +4,7 @@ create procedure add_movie(in t varchar(100), y int, d varchar(100), s_name varc
 begin
 	if ((t,y,d) in (select title,year,director from movies where title=t and year=y and director=d)) then
         select 1 into movieExists;
-        select -1 into starExists;
+        select "-1" into starExists;
         select -1 into genreExists;
     else
         select 0 into movieExists;
