@@ -29,7 +29,7 @@ public class StarsinMoviesParser{
 
     public StarsinMoviesParser() {
         try {
-            inconsistencies = new FileWriter("movieInconsistencies.txt");
+            inconsistencies = new FileWriter("starMoviesInconsistencies.txt");
             sqlFile = new FileWriter("casts124Inserts.sql");
             sqlFile.write("USE moviedbexample;\n" +
                     "BEGIN;\n");
@@ -53,19 +53,19 @@ public class StarsinMoviesParser{
 
     }
     public void loadDatabaseMovieIds() {
-        String query = "select movieId from stars_in_movies";
+        String query = "select id from movies";
         String query2 = "select name,id from stars";
         try
         {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false",
-                    "mytestuser", "Nonie127");
+                    "mytestuser", "My6$Password");
             PreparedStatement statement = conn.prepareStatement(query);
             PreparedStatement statement2 = conn.prepareStatement(query2);
             ResultSet rs = statement.executeQuery();
             while (rs.next())
             {
-                databaseMovieIds.add(rs.getString("movieId"));
+                databaseMovieIds.add(rs.getString("id"));
             }
             ResultSet rs2 = statement2.executeQuery();
             while (rs2.next())
@@ -119,14 +119,16 @@ public class StarsinMoviesParser{
 
                 // add it to list
                 try {
+                    String m = s.getMovieId();
+                    String n = s.getStarName();
                     if (databaseMovieIds.contains(s.getMovieId()) && databaseStars.containsKey(s.getStarName())) {
 //                        sqlFile.write("INSERT INTO movies VALUES(\"" + movie.getTitle() + "\"," + movie.getYear() + ",\"" +
 //                                movie.getDirector() + "\");\n");
-                        sqlFile.write(String.format("INSERT INTO movies VALUES(\"%s\",\"%s\");\n",
-                                s.getMovieId(), databaseStars.get(s.getStarName())));
+                        sqlFile.write(String.format("INSERT INTO stars_in_movies VALUES(\"%s\",\"%s\");\n",
+                                databaseStars.get(s.getStarName()), s.getMovieId()));
                     } else {
                         inconsistencies.write("Movie ID: " + s.getMovieId() + "\n" +
-                                "Star Name:        " + s.getStarName() + "\n" + "\n\n");
+                                "Star Name:        " + s.getStarName() + "\n" + "\n");
                     }
                 } catch (Exception e) {
                     System.out.println("error writing to file: " + e.getMessage());

@@ -16,6 +16,7 @@ import java.util.Locale;
 
 public class MovieParser{
     HashSet<String> databaseMovies;
+    HashSet<String> databaseMovieIds;
     HashMap<String, Integer> databaseGenres;
     FileWriter inconsistencies;
     FileWriter sqlFile;
@@ -28,6 +29,7 @@ public class MovieParser{
         try {
             databaseMovies = new HashSet<>();
             databaseGenres = new HashMap<>();
+            databaseMovieIds = new HashSet<>();
             inconsistencies = new FileWriter("movieInconsistencies.txt");
             sqlFile = new FileWriter("mains243Inserts.sql");
             sqlFile.write("USE moviedbexample;\n" +
@@ -43,7 +45,7 @@ public class MovieParser{
     }
 
     public void loadDatabaseMovies() {
-        String query = "select title,year,director from movies";
+        String query = "select * from movies";
         String query2 = "select max(movies.id), max(genres.id) from movies, genres";
         String query3 = "select * from genres";
         try
@@ -60,6 +62,7 @@ public class MovieParser{
             {
                 String info = "";
                 info += rs.getString("title") + rs.getString("year") + rs.getString("director");
+                databaseMovieIds.add(rs.getString("id"));
                 databaseMovies.add(info);
             }
 
@@ -133,10 +136,11 @@ public class MovieParser{
                 String info = movie.getTitle() + movie.getYear() + movie.getDirector();
                 try {
                     // create movie queries
-                    if (!databaseMovies.contains(info))
+                    if (!databaseMovies.contains(info) && !databaseMovieIds.contains(movie.getId()))
                     {
                         sqlFile.write(String.format("INSERT INTO movies VALUES(\"%s\",\"%s\",%d,\"%s\");\n",
                         movie.getId(),movie.getTitle(),movie.getYear(),movie.getDirector()));
+                        databaseMovieIds.add(movie.getId());
                         databaseMovies.add(info);
 
                         // create genre queries

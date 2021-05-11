@@ -28,7 +28,7 @@ public class StarsParser{
 
     public StarsParser() {
         try {
-            inconsistencies = new FileWriter("movieInconsistencies.txt");
+            inconsistencies = new FileWriter("starInconsistencies.txt");
             sqlFile = new FileWriter("actors63Inserts.sql");
             sqlFile.write("USE moviedbexample;\n" +
                     "BEGIN;\n");
@@ -59,7 +59,7 @@ public class StarsParser{
         {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false",
-                    "mytestuser", "Nonie127");
+                    "mytestuser", "My6$Password");
             PreparedStatement statement = conn.prepareStatement(query);
             PreparedStatement statement2 = conn.prepareStatement(query2);
             ResultSet rs = statement.executeQuery();
@@ -120,13 +120,25 @@ public class StarsParser{
                     if (!databaseStars.contains(info)) {
 //                        sqlFile.write("INSERT INTO movies VALUES(\"" + movie.getTitle() + "\"," + movie.getYear() + ",\"" +
 //                                movie.getDirector() + "\");\n");
-                        sqlFile.write(String.format("INSERT INTO stars VALUES(\"%s\",\"%s\",%d);\n",
-                                "tt" + highestID + 1, s.getName(), s.getBirthYear()));
+                        if (s.getBirthYear() == 0) {
+                            sqlFile.write(String.format("INSERT INTO stars VALUES(\"%s\",\"%s\",%s);\n",
+                                    "nm" + (highestID + 1), s.getName().replace("\"",""), null));
+                        }
+                        else {
+                            sqlFile.write(String.format("INSERT INTO stars VALUES(\"%s\",\"%s\",%d);\n",
+                                    "nm" + (highestID + 1), s.getName().replace("\"",""), s.getBirthYear()));
+                        }
                         highestID++;
                         databaseStars.add(info);
                     } else {
-                        inconsistencies.write("Star Name: " + s.getName() + "\n" +
-                                "Star DOB:        " + s.getBirthYear() + "\n" + "\n\n");
+                        if (s.getBirthYear() == 0) {
+                            inconsistencies.write("Star Name: " + s.getName() + "\n" +
+                                    "Star DOB:        " + null + "\n" + "\n");
+                        }
+                        else {
+                            inconsistencies.write("Star Name: " + s.getName() + "\n" +
+                                    "Star DOB:        " + s.getBirthYear() + "\n" + "\n\n");
+                        }
                     }
                 } catch (Exception e) {
                     System.out.println("error writing to file: " + e.getMessage());
