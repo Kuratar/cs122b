@@ -6,25 +6,37 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 
 public class MovieParser{
-    HashSet<String> databaseMovies = new HashSet<>();
+    HashSet<String> databaseMovies;
+    HashMap<String, Integer> databaseGenres;
     FileWriter inconsistencies;
     FileWriter sqlFile;
+    FileWriter sqlFileGenre;
     int highestID;
+    int highestGenre;
     Document dom;
 
     public MovieParser() {
         try {
+            databaseMovies = new HashSet<>();
+            databaseGenres = new HashMap<>();
             inconsistencies = new FileWriter("movieInconsistencies.txt");
             sqlFile = new FileWriter("mains243Inserts.sql");
             sqlFile.write("USE moviedbexample;\n" +
                     "BEGIN;\n");
+            sqlFileGenre = new FileWriter("mains243Genres.sql");
+            sqlFileGenre.write("USE moviedbexample;\n" +
+                    "BEGIN;\n");
             highestID = -1;
+            highestGenre = -1;
         } catch (Exception e) {
             System.out.println("error from creating file: " + e.getMessage());
         }
@@ -32,14 +44,16 @@ public class MovieParser{
 
     public void loadDatabaseMovies() {
         String query = "select title,year,director from movies";
-        String query2 = "select max(id) from movies";
+        String query2 = "select max(movies.id), max(genres.id) from movies, genres";
+        String query3 = "select * from genres";
         try
         {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true",
-                    "mytestuser", "Nonie127");
+                    "mytestuser", "My6$Password");
             PreparedStatement statement = conn.prepareStatement(query);
             PreparedStatement statement2 = conn.prepareStatement(query2);
+            PreparedStatement statement3 = conn.prepareStatement(query3);
 
             ResultSet rs = statement.executeQuery();
             while (rs.next())
@@ -50,9 +64,17 @@ public class MovieParser{
             }
 
             ResultSet rs2 = statement2.executeQuery(); rs2.next();
-            highestID = Integer.parseInt(rs2.getString("max(id)").substring(2));
+            highestID = Integer.parseInt(rs2.getString("max(movies.id)").substring(2));
+            highestGenre = rs2.getInt("max(genres.id)");
+
+            ResultSet rs3 = statement3.executeQuery();
+            while (rs3.next()) {
+                databaseGenres.put(rs3.getString("name").toLowerCase(), rs3.getInt("id"));
+            }
+
             rs.close();
             statement.close();
+            statement2.close();
             conn.close();
         }
         catch (Exception e) {
@@ -109,16 +131,33 @@ public class MovieParser{
                 Movie movie = parseMovie(element);
 
                 String info = movie.getTitle() + movie.getYear() + movie.getDirector();
-                // add it to list
                 try {
+                    // create movie queries
                     if (!databaseMovies.contains(info))
                     {
-//                        sqlFile.write("INSERT INTO movies VALUES(\"" + movie.getTitle() + "\"," + movie.getYear() + ",\"" +
-//                                movie.getDirector() + "\");\n");
                         sqlFile.write(String.format("INSERT INTO movies VALUES(\"%s\",\"%s\",%d,\"%s\");\n",
                         "tt"+(highestID+1),movie.getTitle(),movie.getYear(),movie.getDirector()));
-                        highestID++;
                         databaseMovies.add(info);
+
+                        // create genre queries
+                        for (String genre : movie.getGenres().split(",")) {
+                            if (!genre.equals("")) {
+                                if (!databaseGenres.containsKey(genre.trim().toLowerCase())) {
+                                    sqlFileGenre.write(String.format("INSERT INTO genres VALUES(%d,\"%s\");\n",
+                                        highestGenre+1, genre.trim().substring(0,1).toUpperCase() + genre.trim().substring(1)));
+                                    databaseGenres.put(genre.trim().toLowerCase(),highestGenre+1);
+                                    sqlFileGenre.write(String.format("INSERT into genres_in_movies VALUES(%d,\"%s\");\n",
+                                        highestGenre+1,"tt"+(highestID+1)));
+                                    highestGenre++;
+                                }
+                                else {
+                                    sqlFileGenre.write(String.format("INSERT into genres_in_movies VALUES(%d,\"%s\");\n",
+                                        databaseGenres.get(genre.trim().toLowerCase()),"tt"+(highestID+1)));
+                                }
+                            }
+                        }
+
+                        highestID++;
                     }
                     else {
                         inconsistencies.write("Movie Title: " + movie.getTitle() + "\n" +
@@ -179,7 +218,6 @@ public class MovieParser{
                 {
                     textVal += nodeList.item(i).getFirstChild().getNodeValue() + ",";
                 }
-
             }
         }
         textVal = textVal.replaceAll(",$", "");
@@ -269,6 +307,8 @@ public class MovieParser{
         try {
             sqlFile.write("COMMIT;");
             sqlFile.close();
+            sqlFileGenre.write("COMMIT;");
+            sqlFileGenre.close();
             inconsistencies.close();
         } catch (Exception e) {
             System.out.println("error writing to file:" + e.getMessage());
