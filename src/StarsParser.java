@@ -59,7 +59,7 @@ public class StarsParser{
         {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false",
-                    "mytestuser", "My6$Password");
+                    "mytestuser", "Nonie127");
             PreparedStatement statement = conn.prepareStatement(query);
             PreparedStatement statement2 = conn.prepareStatement(query2);
             ResultSet rs = statement.executeQuery();
