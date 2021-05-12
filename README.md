@@ -4,6 +4,8 @@ Project 1 Video Demo URL: https://vimeo.com/535382852
 
 Project 2 Video Demo URL: https://vimeo.com/542397737
 
+Project 3 Video Demo URL: https://vimeo.com/548256715
+
 Instructions for Deployment:
 1. git clone into repository
 2. run mvn clean package
@@ -56,12 +58,12 @@ Project 3:
 
     Time Total of Parsing
     MoviesParser parsing time + mains243Inserts.sql execution time + mains243Genres.sql execution time = 
-    NUMBER + NUMBER + NUMBER = NUMBER1
+    5.618 s + 1 s + 1 s = 7.618 seconds
 
     StarsParser parsing time + actors63Inserts.sql execution time + =
-    NUMBER + NUMBER = NUMBER2
+    4.223 s + 1s = 5.223 seconds
 
     StarsinMoviesParser parsing time + casts124Inserts.sql execution time = 
-    NUMBER + NUMBER = NUMBER3
+    5.143 s + 4 s = 9.143 seconds
 
-    Total time = NUMBER1 + NUMBER2 + NUMBER3 = FINALNUMBER
+    Total time = 21.984 seconds
