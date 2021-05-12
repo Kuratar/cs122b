@@ -52,7 +52,7 @@ public class MovieParser{
         {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true",
-                    "mytestuser", "Nonie127");
+                    "mytestuser", "My6$Password");
             PreparedStatement statement = conn.prepareStatement(query);
             PreparedStatement statement2 = conn.prepareStatement(query2);
             PreparedStatement statement3 = conn.prepareStatement(query3);
@@ -142,6 +142,8 @@ public class MovieParser{
                         movie.getId(),movie.getTitle(),movie.getYear(),movie.getDirector()));
                         databaseMovieIds.add(movie.getId());
                         databaseMovies.add(info);
+                        sqlFile.write(String.format("INSERT INTO ratings VALUES(\"%s\",%f,%d);\n",
+                                movie.getId(),0.0,0));
 
                         // create genre queries
                         for (String genre : movie.getGenres().split(",")) {
@@ -313,7 +315,7 @@ public class MovieParser{
             sqlFileGenre.close();
             inconsistencies.close();
             System.out.println("Finished parsing mains243.xml\n" +
-                               "movie queries are in mains243Inserts.sql\n" +
+                               "movie and rating queries are in mains243Inserts.sql\n" +
                                "genre and genres_in_movies queries are in mains243Genres.sql\n" +
                                "inconsistencies in movieInconsistencies.txt");
         } catch (Exception e) {
