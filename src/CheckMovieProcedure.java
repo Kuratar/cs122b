@@ -34,7 +34,7 @@ public class CheckMovieProcedure extends HttpServlet {
         String starName = request.getParameter("star_name");
         String genreName = request.getParameter("genre");
 
-        String query = "call add_movie(?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "{call add_movie(?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = dataSource.getConnection();
              CallableStatement statement = conn.prepareCall(query)) {
@@ -49,7 +49,7 @@ public class CheckMovieProcedure extends HttpServlet {
             statement.registerOutParameter(7, Types.VARCHAR);
             statement.registerOutParameter(8, Types.INTEGER);
 
-            statement.executeUpdate();
+            statement.execute();
 
             int movieExists = statement.getInt("@movieExists");
             String starExists = statement.getString("@starExists");

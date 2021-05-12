@@ -55,22 +55,27 @@ public class InsertMovieServlet extends HttpServlet {
             JsonObject jsonObject = new JsonObject();
 
             ResultSet rs = statement.executeQuery();    rs.next();
-            int movieId = Integer.parseInt(rs.getString("max(movies.id)").substring(2))+1;
-            int starId = Integer.parseInt(rs.getString("max(stars.id)").substring(2))+1;
+            String movieId = rs.getString("max(movies.id)");
+            String starId = rs.getString("max(stars.id)");
+            int movieInt = Integer.parseInt(movieId.replaceAll("[^0-9]", ""))+1;
+            String movieChars = movieId.replaceAll("[^a-zA-Z]", "");
+            int starInt = Integer.parseInt(starId.replaceAll("[^0-9]", ""))+1;
+            String starChars = starId.replaceAll("[^a-zA-Z]", "");
+
             int genreId = rs.getInt("max(genres.id)")+1;
 
-            statement2.setString(1, "tt"+movieId);
+            statement2.setString(1, movieChars+movieInt);
             statement2.setString(2, title);
             statement2.setInt(3, Integer.parseInt(releaseYear));
             statement2.setString(4, director);
-            //statement2.executeUpdate();
+            statement2.executeUpdate();
 
             if (starExists.equals("-1")) {
-                statement3.setString(1, "nm"+starId);
+                statement3.setString(1, starChars+starInt);
                 statement3.setString(2, starName);
-                statement5.setString(1,"nm"+starId);
-                //statement3.executeUpdate();
-                jsonObject.addProperty("starId", "nm"+starId);
+                statement5.setString(1,starChars+starInt);
+                statement3.executeUpdate();
+                jsonObject.addProperty("starId", starChars+starInt);
                 jsonObject.addProperty("starExists", "0");
             }
             else {
@@ -78,14 +83,14 @@ public class InsertMovieServlet extends HttpServlet {
                 jsonObject.addProperty("starId", starExists);
                 jsonObject.addProperty("starExists", "1");
             }
-            statement5.setString(2, "tt"+movieId);
-            //statement5.executeUpdate();
+            statement5.setString(2, movieChars+movieInt);
+            statement5.executeUpdate();
 
             if (genreExists.equals("-1")) {
                 statement4.setInt(1, genreId);
                 statement4.setString(2, genreName);
                 statement6.setInt(1, genreId);
-               // statement4.executeUpdate();
+                statement4.executeUpdate();
                 jsonObject.addProperty("genreId", genreId);
                 jsonObject.addProperty("genreExists", "0");
             }
@@ -94,14 +99,14 @@ public class InsertMovieServlet extends HttpServlet {
                 jsonObject.addProperty("genreId", genreExists);
                 jsonObject.addProperty("genreExists", "1");
             }
-            statement6.setString(2, "tt"+movieId);
-            //statement6.executeUpdate();
+            statement6.setString(2, movieChars+movieInt);
+            statement6.executeUpdate();
 
             conn.commit();
 
             jsonObject.addProperty("status", "success");
             jsonObject.addProperty("message", "Successfully added new movie");
-            jsonObject.addProperty("movieId", "tt"+movieId);
+            jsonObject.addProperty("movieId", movieChars+movieInt);
 
             rs.close();
             statement.close();
