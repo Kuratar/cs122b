@@ -126,6 +126,9 @@ fabric.properties
 # Sonarlint plugin
 .idea/sonarlint
 
+# SQL Files
+*.sql
+
 ### Java ###
 # Compiled class file
 *.class
@@ -163,6 +166,9 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+mains243.xml
+actors63.xml
+casts124.xml
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
