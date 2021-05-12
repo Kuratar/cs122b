@@ -43,6 +43,7 @@ public class InsertMovieServlet extends HttpServlet {
         String query4 = "insert into genres (id, name) values (?,?);";
         String query5 = "insert into stars_in_movies (starId, movieId) values (?,?);";
         String query6 = "insert into genres_in_movies (genreId, movieId) values (?,?);";
+        String query7 = "insert into ratings (movieId, rating, numVotes) values (?,?,?);";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement statement = conn.prepareStatement(query);
@@ -50,7 +51,8 @@ public class InsertMovieServlet extends HttpServlet {
              PreparedStatement statement3 = conn.prepareStatement(query3);
              PreparedStatement statement4 = conn.prepareStatement(query4);
              PreparedStatement statement5 = conn.prepareStatement(query5);
-             PreparedStatement statement6 = conn.prepareStatement(query6)) {
+             PreparedStatement statement6 = conn.prepareStatement(query6);
+             PreparedStatement statement7 = conn.prepareStatement(query7)) {
             conn.setAutoCommit(false);
             JsonObject jsonObject = new JsonObject();
 
@@ -101,6 +103,11 @@ public class InsertMovieServlet extends HttpServlet {
             }
             statement6.setString(2, movieChars+movieInt);
             statement6.executeUpdate();
+
+            statement7.setString(1,movieChars+movieInt);
+            statement7.setFloat(2,0);
+            statement7.setInt(3,0);
+            statement7.executeUpdate();
 
             conn.commit();
 
