@@ -87,6 +87,23 @@ function handleTitles() {
     titleTableBodyElement.append(lastRowHTML);
 }
 
+function handleNormalSearch(query) {
+    console.log("doing normal search with query: " + query);
+    // TODO: you should do normal search here
+    window.location.replace("auto-search.html?query=" + query + "&nMovies=10&page=0&sorting=default");
+    // jQuery.ajax({
+    //     dataType: "json", // Setting return data type
+    //     method: "GET", // Setting request method
+    //     url: "api/auto-search?query=" + query, // Setting request url, which is mapped by MoviesServlet in Movies.java
+    //     success: function(resultData) {
+    //         handleNormalSearchResult(query, resultData);
+    //     }, // Setting callback function to handle data returned successfully by the MoviesServlet
+    //     error: function(resultData) {
+    //         console.log("error from auto search servlet");
+    //         console.log("error: " + resultData[0]["errorMessage"]);
+    //     }
+    // });
+}
 
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
@@ -101,3 +118,10 @@ jQuery.ajax({
 });
 
 handleTitles();
+
+// catch the enter key from user or clicked search button
+$('#autoSearch_form').submit(function (formSubmitEvent) {
+    console.log("user pressed enter key or clicked search button");
+    formSubmitEvent.preventDefault();
+    handleNormalSearch($('#autocomplete').val());
+})
