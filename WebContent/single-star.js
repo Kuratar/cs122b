@@ -66,6 +66,7 @@ function handleResult(resultData) {
             '&star=' + star +
             '&genreId=' + genreId +
             '&char=' + char +
+            '&query=' + query +
             '&nMovies=' + nMovies +
             '&page=' + page +
             '&sorting=' + sortingOption + '">'
@@ -106,6 +107,13 @@ function handleResult(resultData) {
             '&sorting=' + sortingOption + '">' +
             'Back to Movie List' + '</a>')
             break;
+        case "autoSearch":
+            backMovieListElement.append('<a href="auto-search.html?query=' + query +
+            '&nMovies=' + nMovies +
+            '&page=' + page +
+            '&sorting=' + sortingOption + '">' +
+            'Back to Movie List' + '</a>')
+            break;
     }
 }
 
@@ -126,6 +134,7 @@ let director = getParameterByName('director');
 let star = getParameterByName('star');
 let genreId = getParameterByName('genreId');
 let char = getParameterByName('char');
+let query = getParameterByName('query');
 
 if (movieListType === "search") {
     // Makes the HTTP GET request and registers on success callback function handleResult
@@ -156,5 +165,14 @@ else if (movieListType === "browseTitle") {
         url: "api/single-star?id=" + starId + "&list=" + movieListType + "&char=" + char +
             "&nMovies=" + nMovies + "&page=" + page + "&sorting=" + sortingOption, // Setting request url, which is mapped by StarsServlet in Stars.java
         success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    });
+}
+else if (movieListType === "autoSearch") {
+    jQuery.ajax({
+        dataType: "json", // Setting return data type
+        method: "GET", // Setting request method
+        url: "api/single-star?id=" + starId + "&list=" + movieListType + "&query=" + query +
+            "&nMovies=" + nMovies + "&page=" + page + "&sorting=" + sortingOption, // Setting request url, which is mapped by MoviesServlet in Movies.java
+        success: (resultData) => handleResult(resultData), // Setting callback function to handle data returned successfully by the MoviesServlet
     });
 }

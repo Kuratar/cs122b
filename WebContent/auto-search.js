@@ -94,10 +94,7 @@ function handleAutoSearchResult(resultData) {
         let prevButtonElementTop = jQuery("#prev_link_top");
         let noMoreMoviesElementTop = jQuery("#no_more_movies_top");
         noMoreMoviesElementTop.append("<b>No more movies or try changing movies per page/sorting option on the first page</b>");
-        let prevButtonLink = '<a href="search.html?title=' + title +
-            '&year=' + year +
-            '&director=' + director +
-            '&star=' + star +
+        let prevButtonLink = '<a href="auto-search.html?query=' + query +
             '&nMovies=' + nMovies +
             '&page=' + "0" +
             '&sorting=' + sorting + '">' +
@@ -144,11 +141,8 @@ function handleAutoSearchResult(resultData) {
             "<th style=\"font-size: x-large\">" +
             // add a link to single-movie.html with id passed with GET url parameter
             '<a href="single-movie.html?id=' + resultData[i]['movie_id'] +
-            '&list=search' +
-            '&title=' + title +
-            '&year=' + year +
-            '&director=' + director +
-            '&star=' + star +
+            '&list=autoSearch' +
+            '&query=' + query +
             '&nMovies=' + nMovies +
             '&page=' + page +
             '&sorting=' + sorting + '">'
@@ -185,11 +179,8 @@ function handleAutoSearchResult(resultData) {
             starHTML +=
                 // add a link to single-star.html with id passed with GET url parameter
                 '<a href="single-star.html?id=' + starsIdsSplit[j] +
-                '&list=search' +
-                '&title=' + title +
-                '&year=' + year +
-                '&director=' + director +
-                '&star=' + star +
+                '&list=autoSearch' +
+                '&query=' + query +
                 '&nMovies=' + nMovies +
                 '&page=' + page +
                 '&sorting=' + sorting + '">'
@@ -221,10 +212,7 @@ function handleAutoSearchResult(resultData) {
         prevPage -= 1;
         let prevButtonElementTop = jQuery("#prev_link_top");
         let prevButtonElementBot = jQuery("#prev_link_bot");
-        let prevButtonLink = '<a href="search.html?title=' + title +
-            '&year=' + year +
-            '&director=' + director +
-            '&star=' + star +
+        let prevButtonLink = '<a href="auto-search.html?query=' + query +
             '&nMovies=' + nMovies +
             '&page=' + prevPage +
             '&sorting=' + sorting + '">' +
@@ -241,10 +229,7 @@ function handleAutoSearchResult(resultData) {
         nextPage += 1;
         let nextButtonElementTop = jQuery("#next_link_top");
         let nextButtonElementBot = jQuery("#next_link_bot");
-        let nextButtonLink = '<a href="search.html?title=' + title +
-            '&year=' + year +
-            '&director=' + director +
-            '&star=' + star +
+        let nextButtonLink = '<a href="auto-search.html?query=' + query +
             '&nMovies=' + nMovies +
             '&page=' + nextPage +
             '&sorting=' + sorting + '">' +
@@ -268,7 +253,8 @@ let sorting = getParameterByName("sorting");
 jQuery.ajax({
     dataType: "json", // Setting return data type
     method: "GET", // Setting request method
-    url: "api/auto-search?query=" + query, // Setting request url, which is mapped by MoviesServlet in Movies.java
+    url: "api/auto-search?query=" + query +
+        "&nMovies=" + nMovies + "&page=" + page + "&sorting=" + sorting, // Setting request url, which is mapped by MoviesServlet in Movies.java
     success: (resultData) => handleAutoSearchResult(resultData), // Setting callback function to handle data returned successfully by the MoviesServlet
     error: function(resultData) {
         console.log("error from auto search servlet");
