@@ -4,7 +4,7 @@ Project 1 Video Demo URL: https://vimeo.com/535382852
 
 Project 2 Video Demo URL: https://vimeo.com/542397737
 
-Project 3 Video Demo URL: https://vimeo.com/548256715
+Project 3 Video Demo Redo URL (No pauses): https://vimeo.com/552690167
 
 Instructions for Deployment:
 1. git clone into repository
