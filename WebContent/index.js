@@ -90,20 +90,93 @@ function handleTitles() {
 function handleNormalSearch(query) {
     console.log("doing normal search with query: " + query);
     // TODO: you should do normal search here
-    window.location.replace("auto-search.html?query=" + query + "&nMovies=10&page=0&sorting=default");
-    // jQuery.ajax({
-    //     dataType: "json", // Setting return data type
-    //     method: "GET", // Setting request method
-    //     url: "api/auto-search?query=" + query, // Setting request url, which is mapped by MoviesServlet in Movies.java
-    //     success: function(resultData) {
-    //         handleNormalSearchResult(query, resultData);
-    //     }, // Setting callback function to handle data returned successfully by the MoviesServlet
-    //     error: function(resultData) {
-    //         console.log("error from auto search servlet");
-    //         console.log("error: " + resultData[0]["errorMessage"]);
-    //     }
-    // });
+    window.location.assign("auto-search.html?query=" + query + "&nMovies=10&page=0&sorting=default");
 }
+
+function handleSelectSuggestion(suggestion) {
+    // TODO: jump to the specific result page based on the selected suggestion
+    let movieTitle = suggestion["value"]
+    let movieId = suggestion["data"]["movieId"]
+    console.log("user selected " + movieTitle + " with ID " + movieId)
+    window.location.assign("single-movie.html?id=" + movieId + "&list=autoSearch&query=" + movieTitle +
+                            "&nMovies=10&page=0&sorting=default")
+}
+
+function handleLookup(query, doneCallback) {
+    console.log("autocomplete initiated");
+    // TODO: if you want to check past query results first, you can do it here
+    if (prevQuery.includes(query)) {
+        console.log("new query \"" + query + "\" similar to previous query \"" + prevQuery + "\"")
+        console.log("suggesting previous suggestions from cache")
+        doneCallback( { suggestions: prevSuggestions } );
+        return;
+    }
+    prevQuery = query;
+    // sending the HTTP GET request to the Java Servlet endpoint hero-suggestion
+    console.log("sending AJAX request to backend Java Servlet");
+    jQuery.ajax({
+        dataType: "json", // Setting return data type
+        method: "GET", // Setting request method
+        url: "api/auto-search?input=" + query, // Setting request url, which is mapped by MoviesServlet in Movies.java
+        success: function(resultData) {
+            // pass the data, query, and doneCallback function into the success handler
+            handleLookupAjaxSuccess(resultData, query, doneCallback);
+        },
+        error: function(resultData) {
+            console.log("error from auto search servlet");
+            console.log("error: " + resultData[0]["errorMessage"]);
+        }
+    });
+
+
+}
+
+function handleLookupAjaxSuccess(data, query, doneCallback) {
+    console.log("lookup ajax successful")
+    console.log("sending suggestion results and caching for duplicate queries")
+    console.log(data)
+
+    // TODO: if you want to cache the result into a global variable you can do it here
+    prevSuggestions = data;
+
+    // call the callback function provided by the autocomplete library
+    // add "{suggestions: jsonData}" to satisfy the library response format according to
+    //   the "Response Format" section in documentation
+    doneCallback( { suggestions: data } );
+}
+
+function autoSearchButton() {
+    console.log("user clicked autocomplete search button");
+    handleNormalSearch($('#autocomplete').val());
+}
+
+// bind pressing enter key to a handler function
+$('#autocomplete').keypress(function(event) {
+    // keyCode 13 is the enter key
+    if (event.keyCode === 13) {
+        console.log("user pressed enter key on autocomplete search");
+        // pass the value of the input box to the handler function
+        handleNormalSearch($('#autocomplete').val())
+    }
+})
+
+$('#autocomplete').autocomplete({
+    // documentation of the lookup function can be found under the "Custom lookup function" section
+    lookup: function (query, doneCallback) {
+        handleLookup(query, doneCallback)
+    },
+    onSelect: function(suggestion) {
+        handleSelectSuggestion(suggestion)
+    },
+    // set delay time
+    deferRequestBy: 300,
+    // there are some other parameters that you might want to use to satisfy all the requirements
+    // TODO: add other parameters, such as minimum characters
+    minChars: 3
+});
+
+let prevSuggestions;
+let prevQuery = "";
 
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
@@ -119,9 +192,3 @@ jQuery.ajax({
 
 handleTitles();
 
-// catch the enter key from user or clicked search button
-$('#autoSearch_form').submit(function (formSubmitEvent) {
-    console.log("user pressed enter key or clicked search button");
-    formSubmitEvent.preventDefault();
-    handleNormalSearch($('#autocomplete').val());
-})

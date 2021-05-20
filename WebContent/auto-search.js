@@ -102,7 +102,7 @@ function handleAutoSearchResult(resultData) {
         prevButtonElementTop.append(prevButtonLink);
         return;
     }
-    else if (resultData.length === 1 && resultData[0]["errorMessage"] !== null) {
+    else if (resultData.length === 1 && resultData[0]["errorMessage"] !== undefined) {
         console.log("error from auto search servlet: " + resultData[0]["errorMessage"]);
         return;
     }

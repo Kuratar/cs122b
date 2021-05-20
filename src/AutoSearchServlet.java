@@ -152,17 +152,81 @@ public class AutoSearchServlet extends HttpServlet {
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json; charset=utf-8");    // Response mime type
+    private JsonArray generateSuggestions(String keywords) {
+        //select id, title from movies where match (title) against ('+lo*' in boolean mode);
+        String query = "SELECT id, title FROM movies WHERE MATCH (title) AGAINST (? IN BOOLEAN MODE) LIMIT 10";
 
-        String userInput = request.getParameter("query");
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement statement = conn.prepareStatement(query);) {
+            JsonArray jsonArray = new JsonArray();
+
+            statement.setString(1, keywords);
+
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                String movieId = rs.getString("id");
+                String movieTitle = rs.getString("title");
+
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("value", movieTitle);
+
+                JsonObject jsonObject1 = new JsonObject();
+                jsonObject1.addProperty("movieId", movieId);
+
+                jsonObject.add("data", jsonObject1);
+                jsonArray.add(jsonObject);
+            }
+
+            rs.close();
+            statement.close();
+            return jsonArray;
+        } catch (Exception e) {
+            // write error message JSON object to output
+            JsonObject jsonObject = new JsonObject();
+            JsonArray errorArray = new JsonArray();
+            jsonObject.addProperty("errorMessage", e.getMessage() + " from generateSuggestions");
+            errorArray.add(jsonObject);
+            return errorArray;
+        }
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        // handle user inputs from autocomplete box
+        // only reached if parameter in given link has "input" which is only written to link if the user has not
+        // pressed enter or clicked the search button, otherwise it would be parameter "query" for completed user input
+        String userInput = request.getParameter("input");
+        if (userInput != null) {
+            // create the string for full text matching in boolean mode
+            String[] inputSplit = userInput.split(" ");
+            String keywords = "";
+            for (String s : inputSplit) {
+                keywords += "+" + s + "* ";
+            }
+            keywords = keywords.substring(0, keywords.length()-1);
+
+            // call the function to create the results
+            JsonArray suggestions = generateSuggestions(keywords);
+
+            // if the size of the results is 1 and the object has errorMessage, set response as failure
+            if (suggestions.size() == 1 && suggestions.get(0).getAsJsonObject().get("errorMessage") != null) {
+                response.setStatus(500);
+            }
+            else { response.setStatus(200); }
+
+            response.getWriter().write(suggestions.toString());
+            return;
+        }
+        else { response.setContentType("application/json; charset=utf-8"); }    // Response mime type
+
+        String query = request.getParameter("query");
         String nMovies = request.getParameter("nMovies");
         String pageNumber = request.getParameter("page");
         String sortingOption = request.getParameter("sorting");
 
-        String[] inputSplit = userInput.split(" ");
+        String[] querySplit = query.split(" ");
         String keywords = "";
-        for (String s : inputSplit) {
+        for (String s : querySplit) {
             keywords += "+" + s + "* ";
         }
         keywords = keywords.substring(0, keywords.length()-1);
