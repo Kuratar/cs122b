@@ -22,16 +22,27 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        View view = inflater.inflate(R.layout.row, parent, false);
+        View view = inflater.inflate(R.layout.row, null, true);
 
         Movie movie = movies.get(position);
 
         TextView titleView = view.findViewById(R.id.title);
         TextView subtitleView = view.findViewById(R.id.subtitle);
 
-        titleView.setText(movie.getTitle());
+
         // need to cast the year to a string to set the label
-        subtitleView.setText(movie.getYear() + "");
+
+        String title = movie.getTitle() ;
+        String year = "Release Year: " + movie.getYear() + "\n";
+        String director = "Director: " + movie.getDirector() + "\n";
+        String genres = "Genre(s): " + movie.getGenres() + "\n";
+        String stars = "Stars: " + movie.getStars() + "\n";
+
+        titleView.setText(title);
+        subtitleView.setText(year);
+        subtitleView.append(director);
+        subtitleView.append(genres);
+        subtitleView.append(stars);
 
         return view;
     }

@@ -24,7 +24,9 @@
         android:layout_alignParentLeft = "true"
         android:layout_alignParentStart = "true"
         android:layout_alignParentRight = "true"
-        android:layout_alignParentEnd = "true" />
+        android:layout_alignParentEnd = "true"
+        android:inputType="text"
+        android:imeOptions="actionSend"/>
     <Button
         android:text="Search"
         android:layout_width="wrap_content"

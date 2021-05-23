@@ -3,23 +3,9 @@ package edu.uci.ics.fabflixmobile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SearchActivity extends Activity {
     private EditText search;
@@ -42,6 +28,16 @@ public class SearchActivity extends Activity {
 
         //assign a listener to call a function to handle the user request when clicking a button
         searchButton.setOnClickListener(view -> search());
+
+        search.setOnKeyListener((v, keyCode, event) -> {
+            //System.out.println(event.getAction());
+            System.out.println(keyCode);
+            if (event.getAction() == 0 && keyCode == KeyEvent.KEYCODE_ENTER) {
+                search();
+                return true;
+            }
+            return false;
+        });
     }
     public void search() {
         //Send query over to ListViewActivity

@@ -8,8 +8,53 @@
                 android:paddingTop="@dimen/activity_vertical_margin">
 
     <ListView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        android:id="@+id/list"
+        android:layout_width="wrap_content"
+        android:layout_height="653dp" />
+
+    <Button
+        android:id="@+id/prevButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/list"
+        android:text="Prev" />
+
+
+    <TextView
+        android:id="@+id/pageNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/list"
+        android:layout_marginStart="72dp"
+        android:layout_marginLeft="72dp"
+        android:layout_marginTop="11dp"
+        android:layout_toEndOf="@+id/prevButton"
+        android:layout_toRightOf="@+id/prevButton"
+        android:text="Page 0"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/errorPageNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/list"
+        android:layout_marginStart="72dp"
+        android:layout_marginLeft="72dp"
+        android:layout_marginTop="11dp"
+        android:layout_toEndOf="@+id/prevButton"
+        android:layout_toRightOf="@+id/prevButton"
+        android:text=""
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/list"
+        android:layout_marginStart="205dp"
+        android:layout_marginLeft="205dp"
+        android:layout_toEndOf="@+id/prevButton"
+        android:layout_toRightOf="@+id/prevButton"
+        android:text="Next" />
 
 </RelativeLayout>
