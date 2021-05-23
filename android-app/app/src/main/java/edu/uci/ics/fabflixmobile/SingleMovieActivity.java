@@ -42,9 +42,9 @@ public class SingleMovieActivity extends Activity {
         Intent intent = getIntent();
         String id = intent.getStringExtra(ListViewActivity.id);
         String title = intent.getStringExtra(ListViewActivity.title);
-        int year = intent.getIntExtra(ListViewActivity.year, 0);
-        String director = intent.getStringExtra(ListViewActivity.director);
-        String genres = intent.getStringExtra(ListViewActivity.genres);
+        //int year = intent.getIntExtra(ListViewActivity.year, 0);
+        //String director = intent.getStringExtra(ListViewActivity.director);
+        //String genres = intent.getStringExtra(ListViewActivity.genres);
 
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         // request type is POST

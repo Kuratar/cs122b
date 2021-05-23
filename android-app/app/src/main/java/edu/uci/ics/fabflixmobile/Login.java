@@ -68,7 +68,7 @@ public class Login extends ActionBarActivity {
                         {
                             Log.d("login.success", response);
                             // initialize the activity(page)/destination
-                            Intent listPage = new Intent(Login.this, ListViewActivity.class);
+                            Intent listPage = new Intent(Login.this, SearchActivity.class);
                             // activate the list page.
                             startActivity(listPage);
                         }
