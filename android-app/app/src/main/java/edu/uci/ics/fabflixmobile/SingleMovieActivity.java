@@ -21,10 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SingleMovieActivity extends Activity {
-    private final String host = "10.0.2.2";
-    private final String port = "8080";
-    private final String domain = "cs122b_spring21_project1_api_example_war";
-    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
+    //private final String host = "10.0.2.2";
+    private final String host = "18.144.57.54";
+    private final String port = "8443";
+    //private final String domain = "cs122b_spring21_project1_api_example_war";
+    private final String domain = "cs122b-spring21-project1-api-example";
+    private final String baseURL = "https://" + host + ":" + port + "/" + domain;
 
     public String title;
     public String year;

@@ -11,10 +11,10 @@ public class SearchActivity extends Activity {
     private EditText search;
     private Button searchButton;
 
-    private final String host = "10.0.2.2";
-    private final String port = "8080";
-    private final String domain = "cs122b_spring21_project1_api_example_war";
-    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
+//    private final String host = "10.0.2.2";
+//    private final String port = "8080";
+//    private final String domain = "cs122b_spring21_project1_api_example_war";
+//    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
 
     public static final String query = "query";
 
