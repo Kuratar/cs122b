@@ -6,11 +6,19 @@ Project 2 Video Demo URL: https://vimeo.com/542397737
 
 Project 3 Video Demo Redo URL (No pauses): https://vimeo.com/552690167
 
+Project 4 Video Demo URL: https://youtu.be/qcjEw1WuSNo
+
 Instructions for Deployment:
 1. git clone into repository
 2. run mvn clean package
 3. move built war into tomcat/webapps
 4. go to URL: http://ec2-18-188-209-46.us-east-2.compute.amazonaws.com:8080/cs122b-spring21-project1-api-example/
+
+Project 4 Instructions for Deployment:
+1. git clone into repository
+2. run mvn clean package
+3. move built war into tomcat/webapps
+4. go to URL: https://18.144.57.54:8443/cs122b-spring21-project1-api-example/
 
 Contributions:
 
@@ -67,3 +75,8 @@ Project 3:
     5.143 s + 4 s = 9.143 seconds
 
     Total time = 21.984 seconds
+
+Project 4:
+    Rich:   Task 2 bulk of android Implementation
+
+    Eric:   Task 1, Task 2 movie list pagination and recaptcha filtering, video demo
