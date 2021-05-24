@@ -28,9 +28,9 @@ public class RecaptchaVerifyUtils {
         conn.setRequestProperty("User-Agent", "Mozilla/5.0");
         conn.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-
         // Data will be sent to the server.
-        String postParams = "secret=" + RecaptchaConstants.SECRET_KEY + "&response=" + gRecaptchaResponse;
+        RecaptchaConstants constant = new RecaptchaConstants();
+        String postParams = "secret=" + constant.getKey() + "&response=" + gRecaptchaResponse;
 
         // Send Request
         conn.setDoOutput(true);
@@ -64,7 +64,7 @@ public class RecaptchaVerifyUtils {
         }
 
         throw new Exception("recaptcha verification failed: response is " + jsonObject.toString());
-// 
+//
     }
 
 }

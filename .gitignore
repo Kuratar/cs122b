@@ -77,7 +77,6 @@ local.properties
 .idea/**/sqlDataSources.xml
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
-src/RecaptchaConstants.java
 
 # Gradle:
 .idea/**/gradle.xml

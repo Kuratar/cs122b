@@ -35,20 +35,23 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+        String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String mobile = request.getParameter("mobile");
 
-//        try {
-//            RecaptchaVerifyUtils.verify(gRecaptchaResponse);
-//        } catch (Exception e) {
-//            JsonObject jsonObject = new JsonObject();
-//            jsonObject.addProperty("recaptcha", "fail");
-//            jsonObject.addProperty("recaptcha-message", "Recaptcha verification error, please try again.");
-//            response.getWriter().write(jsonObject.toString());
-//
-//            return;
-//        }
+        if (gRecaptchaResponse != null && mobile == null) {
+            try {
+                RecaptchaVerifyUtils.verify(gRecaptchaResponse);
+            } catch (Exception e) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("recaptcha", "fail");
+                jsonObject.addProperty("recaptcha-message", "Recaptcha verification error, please try again.");
+                response.getWriter().write(jsonObject.toString());
+
+                return;
+            }
+        }
 
         // query to check if user exists within database
         String userQuery = "select *\n" +

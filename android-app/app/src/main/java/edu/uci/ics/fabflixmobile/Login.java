@@ -92,6 +92,7 @@ public class Login extends ActionBarActivity {
                 final Map<String, String> params = new HashMap<>();
                 params.put("email", username.getText().toString());
                 params.put("password", password.getText().toString());
+                params.put("mobile", "true");
 
                 return params;
             }
