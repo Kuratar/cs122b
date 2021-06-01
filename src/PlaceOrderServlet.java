@@ -27,7 +27,8 @@ public class PlaceOrderServlet extends HttpServlet {
 
     public void init(ServletConfig config) {
         try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample-master");
+            //dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample-master");
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
         } catch (NamingException e) {
             e.printStackTrace();
         }
