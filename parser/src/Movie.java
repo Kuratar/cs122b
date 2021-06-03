@@ -1,3 +1,5 @@
+package src;
+
 public class Movie {
 
     private final String id;

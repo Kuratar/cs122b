@@ -1,3 +1,5 @@
+package src;
+
 public class StarsinMovies {
 
     private final String movieId;

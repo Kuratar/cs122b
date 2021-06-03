@@ -1,3 +1,5 @@
+package src;
+
 public class Stars {
 
     private final String name;

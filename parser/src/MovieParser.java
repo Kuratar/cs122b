@@ -1,3 +1,5 @@
+package src;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -164,7 +166,7 @@ public class MovieParser{
                         }
                     }
                     else {
-                        inconsistencies.write("Movie Title: " + movie.getTitle() + "\n" +
+                        inconsistencies.write("src.Movie Title: " + movie.getTitle() + "\n" +
                                 "Year:        " + movie.getYear() + "\n" +
                                 "Director:    " + movie.getDirector()+ "\n\n");
                     }
