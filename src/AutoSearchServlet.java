@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,6 +24,11 @@ public class AutoSearchServlet extends HttpServlet {
     private String currentSortingOption;
     // holds the next page of results
     private JsonArray nextPageResults;
+
+    private FileWriter autoSearchTimes;
+    private long queryElapsed;
+    private long query2Elapsed;
+    private long query3Elapsed;
 
     // Create a dataSource which registered in web.xml
     private DataSource dataSource;
@@ -81,7 +86,11 @@ public class AutoSearchServlet extends HttpServlet {
             statement.setInt(2, Integer.parseInt(nMovies));
             statement.setInt(3, Integer.parseInt(pageNumber) * Integer.parseInt(nMovies));
 
+            long queryStart = System.nanoTime();
             ResultSet rs = statement.executeQuery();
+            long queryEnd = System.nanoTime();
+            queryElapsed = queryEnd - queryStart;
+
             while (rs.next()) {
                 String movie_id = rs.getString("id");
                 String movie_title = rs.getString("title");
@@ -93,8 +102,15 @@ public class AutoSearchServlet extends HttpServlet {
                 statement2.setString(1, movie_id);
                 statement3.setString(1, movie_id);
 
+                long query2Start = System.nanoTime();
                 ResultSet rs2 = statement2.executeQuery();
+                long query2End = System.nanoTime();
+                query2Elapsed = query2End - query2Start;
+
+                long query3Start = System.nanoTime();
                 ResultSet rs3 = statement3.executeQuery();
+                long query3End = System.nanoTime();
+                query3Elapsed = query3End - query3Start;
 
                 // get ids and names of genre and stars into a string
                 String genreIds = "";
@@ -191,10 +207,18 @@ public class AutoSearchServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         // handle user inputs from autocomplete box
         // only reached if parameter in given link has "input" which is only written to link if the user has not
         // pressed enter or clicked the search button, otherwise it would be parameter "query" for completed user input
+        try {
+            autoSearchTimes = new FileWriter("C:\\Users\\Eric\\Desktop\\School\\CS122B\\projects\\gitclones\\" +
+                                                "cs122b-spring21-team-93\\autoSearchPerformance\\performances\\single1.txt",true);
+        } catch (IOException e) {
+            System.out.println("IOException: " + e.getMessage());
+            throw e;
+        }
+        long servletStart = System.nanoTime();
+
         String userInput = request.getParameter("input");
         if (userInput != null) {
             // create the string for full text matching in boolean mode
@@ -267,6 +291,11 @@ public class AutoSearchServlet extends HttpServlet {
             }
             if (response.getStatus() == 500) { }
             else { response.setStatus(200); }
+
+            long servletEnd = System.nanoTime();
+            long servletElapsed = servletEnd - servletStart;
+            autoSearchTimes.write(queryElapsed + " " + query2Elapsed + " " + query3Elapsed + " " + servletElapsed + "\n");
+            autoSearchTimes.close();
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
