@@ -211,8 +211,8 @@ public class AutoSearchServlet extends HttpServlet {
         // only reached if parameter in given link has "input" which is only written to link if the user has not
         // pressed enter or clicked the search button, otherwise it would be parameter "query" for completed user input
         try {
-            autoSearchTimes = new FileWriter("C:\\Users\\Eric\\Desktop\\School\\CS122B\\projects\\gitclones\\" +
-                                                "cs122b-spring21-team-93\\autoSearchPerformance\\performances\\single1.txt",true);
+            autoSearchTimes = new FileWriter("/home/ubuntu/" +
+                                                "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt",true);
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
             throw e;
