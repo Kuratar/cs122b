@@ -8,13 +8,11 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
 
 public class MovieParser{
     HashSet<String> databaseMovies;
@@ -166,7 +164,7 @@ public class MovieParser{
                         }
                     }
                     else {
-                        inconsistencies.write("src.Movie Title: " + movie.getTitle() + "\n" +
+                        inconsistencies.write("Movie Title: " + movie.getTitle() + "\n" +
                                 "Year:        " + movie.getYear() + "\n" +
                                 "Director:    " + movie.getDirector()+ "\n\n");
                     }

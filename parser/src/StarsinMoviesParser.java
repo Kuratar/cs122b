@@ -4,7 +4,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import src.StarsinMovies;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -129,7 +128,7 @@ public class StarsinMoviesParser{
                         sqlFile.write(String.format("INSERT INTO stars_in_movies VALUES(\"%s\",\"%s\");\n",
                                 databaseStars.get(s.getStarName()), s.getMovieId()));
                     } else {
-                        inconsistencies.write("src.Movie ID: " + s.getMovieId() + "\n" +
+                        inconsistencies.write("Movie ID: " + s.getMovieId() + "\n" +
                                 "Star Name:        " + s.getStarName() + "\n" + "\n");
                     }
                 } catch (Exception e) {

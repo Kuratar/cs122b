@@ -42,8 +42,8 @@ Project 2:
 
 Project 3:
 
-    Rich:   Task 2, Task 3, creating DOM Parser files with basic framework, partial completion of Stars and
-            StarsinMovies parsers for insert statement creations, Video Demo
+    Rich:   Task 2, Task 3, creating DOM Parser files with basic framework, partial completion of src.Stars and
+            src.StarsinMovies parsers for insert statement creations, Video Demo
 
     Eric:   Task 4, Task 5, Task6, Debugging and completion of all parser files
 
