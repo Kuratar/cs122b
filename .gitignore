@@ -127,7 +127,7 @@ fabric.properties
 .idea/sonarlint
 
 # SQL Files
-#*.sql
+*.sql
 
 ### Java ###
 # Compiled class file
