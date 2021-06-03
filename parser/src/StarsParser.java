@@ -30,8 +30,8 @@ public class StarsParser{
 
     public StarsParser() {
         try {
-            inconsistencies = new FileWriter("starInconsistencies.txt");
-            sqlFile = new FileWriter("actors63Inserts.sql");
+            inconsistencies = new FileWriter("parser/inconsistencies/starInconsistencies.txt");
+            sqlFile = new FileWriter("parser/queries/actors63Inserts.sql");
             sqlFile.write("USE moviedbexample;\n" +
                     "BEGIN;\n");
             highestID = -1;
@@ -61,7 +61,7 @@ public class StarsParser{
         {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false",
-                    "mytestuser", "Nonie127");
+                    "mytestuser", "My6$Password");
             PreparedStatement statement = conn.prepareStatement(query);
             PreparedStatement statement2 = conn.prepareStatement(query2);
             ResultSet rs = statement.executeQuery();
@@ -94,7 +94,7 @@ public class StarsParser{
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
             // parse using builder to get DOM representation of the XML file
-            dom = documentBuilder.parse("actors63.xml");
+            dom = documentBuilder.parse("parser/data/actors63.xml");
 
         } catch (ParserConfigurationException | SAXException | IOException error) {
             error.printStackTrace();
@@ -208,8 +208,8 @@ public class StarsParser{
             sqlFile.close();
             inconsistencies.close();
             System.out.println("Finished parsing actors63.xml\n" +
-                               "queries are in actors63Inserts.sql\n" +
-                               "inconsistencies in starInconsistencies.txt");
+                               "queries are in parser/queries/actors63Inserts.sql\n" +
+                               "inconsistencies in parser/inconsistencies/starInconsistencies.txt");
         } catch (Exception e) {
             System.out.println("error writing to file:" + e.getMessage());
         }

@@ -30,11 +30,11 @@ public class MovieParser{
             databaseMovies = new HashSet<>();
             databaseGenres = new HashMap<>();
             databaseMovieIds = new HashSet<>();
-            inconsistencies = new FileWriter("movieInconsistencies.txt");
-            sqlFile = new FileWriter("mains243Inserts.sql");
+            inconsistencies = new FileWriter("parser/inconsistencies/movieInconsistencies.txt");
+            sqlFile = new FileWriter("parser/queries/mains243Inserts.sql");
             sqlFile.write("USE moviedbexample;\n" +
                     "BEGIN;\n");
-            sqlFileGenre = new FileWriter("mains243Genres.sql");
+            sqlFileGenre = new FileWriter("parser/queries/mains243Genres.sql");
             sqlFileGenre.write("USE moviedbexample;\n" +
                     "BEGIN;\n");
             highestID = -1;
@@ -52,7 +52,7 @@ public class MovieParser{
         {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             Connection conn = DriverManager.getConnection("jdbc:" + "mysql" + ":///" + "moviedbexample" + "?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true",
-                    "mytestuser", "Nonie127");
+                    "mytestuser", "My6$Password");
             PreparedStatement statement = conn.prepareStatement(query);
             PreparedStatement statement2 = conn.prepareStatement(query2);
             PreparedStatement statement3 = conn.prepareStatement(query3);
@@ -111,7 +111,7 @@ public class MovieParser{
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
             // parse using builder to get DOM representation of the XML file
-            dom = documentBuilder.parse("mains243.xml");
+            dom = documentBuilder.parse("parser/data/mains243.xml");
 
         } catch (ParserConfigurationException | SAXException | IOException error) {
             error.printStackTrace();
@@ -315,9 +315,9 @@ public class MovieParser{
             sqlFileGenre.close();
             inconsistencies.close();
             System.out.println("Finished parsing mains243.xml\n" +
-                               "movie and rating queries are in mains243Inserts.sql\n" +
-                               "genre and genres_in_movies queries are in mains243Genres.sql\n" +
-                               "inconsistencies in movieInconsistencies.txt");
+                               "movie and rating queries are in parser/queries/mains243Inserts.sql\n" +
+                               "genre and genres_in_movies queries are in parser/queries/mains243Genres.sql\n" +
+                               "inconsistencies in parser/inconsistencies/movieInconsistencies.txt");
         } catch (Exception e) {
             System.out.println("error writing to file:" + e.getMessage());
         }
