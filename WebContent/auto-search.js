@@ -90,6 +90,7 @@ function addToShoppingCart(movieId, rowMessageId)
 }
 
 function handleAutoSearchResult(resultData) {
+    console.log(resultData["path"])
     if (resultData.length === 0) {
         let prevButtonElementTop = jQuery("#prev_link_top");
         let noMoreMoviesElementTop = jQuery("#no_more_movies_top");
