@@ -40,18 +40,18 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         String mobile = request.getParameter("mobile");
 
-        if (gRecaptchaResponse != null && mobile == null) {
-            try {
-                RecaptchaVerifyUtils.verify(gRecaptchaResponse);
-            } catch (Exception e) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("recaptcha", "fail");
-                jsonObject.addProperty("recaptcha-message", "Recaptcha verification error, please try again.");
-                response.getWriter().write(jsonObject.toString());
-
-                return;
-            }
-        }
+//        if (gRecaptchaResponse != null && mobile == null) {
+//            try {
+//                RecaptchaVerifyUtils.verify(gRecaptchaResponse);
+//            } catch (Exception e) {
+//                JsonObject jsonObject = new JsonObject();
+//                jsonObject.addProperty("recaptcha", "fail");
+//                jsonObject.addProperty("recaptcha-message", "Recaptcha verification error, please try again.");
+//                response.getWriter().write(jsonObject.toString());
+//
+//                return;
+//            }
+//        }
 
         // query to check if user exists within database
         String userQuery = "select *\n" +
