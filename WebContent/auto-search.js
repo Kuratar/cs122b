@@ -272,8 +272,8 @@ jQuery.ajax({
         "&nMovies=" + nMovies + "&page=" + page + "&sorting=" + sorting, // Setting request url, which is mapped by MoviesServlet in Movies.java
     success: (resultData) => handleAutoSearchResult(resultData), // Setting callback function to handle data returned successfully by the MoviesServlet
     error: function(resultData) {
-        alert(resultData);
-        alert(resultData[0]);
+        console.log(resultData);
+        console.log(resultData[0]);
         console.log("error from auto search servlet");
         console.log("error: " + resultData[0]["errorMessage"]);
     }
