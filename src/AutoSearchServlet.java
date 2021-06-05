@@ -215,101 +215,108 @@ public class AutoSearchServlet extends HttpServlet {
         // only reached if parameter in given link has "input" which is only written to link if the user has not
         // pressed enter or clicked the search button, otherwise it would be parameter "query" for completed user input
         try {
-            autoSearchTimes = new FileWriter("~/home/ubuntu/" +
+            File f = new File("/home/ubuntu/" +
+                    "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt)");
+            JsonObject j = new JsonObject();
+            j.addProperty("exists", Boolean.toString(f.exists()));
+            response.getWriter().write(j.toString());
+            autoSearchTimes = new FileWriter("/home/ubuntu/" +
                                                 "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt",true);
+            return;
+
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
             throw e;
         }
-        long servletStart = System.nanoTime();
-
-        String userInput = request.getParameter("input");
-        if (userInput != null) {
-            // create the string for full text matching in boolean mode
-            String[] inputSplit = userInput.split(" ");
-            String keywords = "";
-            for (String s : inputSplit) {
-                keywords += "+" + s + "* ";
-            }
-            keywords = keywords.substring(0, keywords.length()-1);
-
-            // call the function to create the results
-            JsonArray suggestions = generateSuggestions(keywords);
-
-            // if the size of the results is 1 and the object has errorMessage, set response as failure
-            if (suggestions.size() == 1 && suggestions.get(0).getAsJsonObject().get("errorMessage") != null) {
-                response.setStatus(500);
-            }
-            else { response.setStatus(200); }
-
-            response.getWriter().write(suggestions.toString());
-            return;
-        }
-        else { response.setContentType("application/json; charset=utf-8"); }    // Response mime type
-
-        String query = request.getParameter("query");
-        String nMovies = request.getParameter("nMovies");
-        String pageNumber = request.getParameter("page");
-        String sortingOption = request.getParameter("sorting");
-
-        String[] querySplit = query.split(" ");
-        String keywords = "";
-        for (String s : querySplit) {
-            keywords += "+" + s + "* ";
-        }
-        keywords = keywords.substring(0, keywords.length()-1);
-
-        try (Connection conn = dataSource.getConnection()) {
-            // if the page is an even number, always generate the current page of results and the next
-            if (Integer.parseInt(pageNumber) % 2 == 0) {
-                JsonArray jsonArray = generateResults(response, conn, keywords, nMovies, pageNumber, sortingOption);
-                response.getWriter().write(jsonArray.toString());
-                JsonArray nextPageArray = generateResults(response, conn, keywords, nMovies, Integer.toString(Integer.parseInt(pageNumber)+1), sortingOption);
-                currentNMovies = nMovies;
-                currentPageNumber = pageNumber;
-                currentSortingOption = sortingOption;
-                nextPageResults = nextPageArray;
-            }
-            // if the page number is an odd number
-            else if (Integer.parseInt(pageNumber) % 2 == 1) {
-                // if the page number is the next page,
-                if (Integer.parseInt(pageNumber) == Integer.parseInt(currentPageNumber)+1) {
-                    // if the settings are not the same, generate new nextPageResults and send
-                    if (!currentNMovies.equals(nMovies) || !currentSortingOption.equals(sortingOption)) {
-                        nextPageResults = generateResults(response, conn, keywords, nMovies, pageNumber, sortingOption);
-                        currentNMovies = nMovies;
-                        currentSortingOption = sortingOption;
-                    }
-                    // statement reached if settings are same thus send nextPage
-                    currentPageNumber = pageNumber;
-                    response.getWriter().write(nextPageResults.toString());
-                }
-                // if the page number is not the next page, generate results for previous page and send
-                else {
-                    JsonArray previousPageResults = generateResults(response, conn, keywords, nMovies, pageNumber, sortingOption);
-                    currentNMovies = nMovies;
-                    currentSortingOption = sortingOption;
-                    currentPageNumber = pageNumber;
-                    response.getWriter().write(previousPageResults.toString());
-                }
-            }
-            if (response.getStatus() == 500) { }
-            else { response.setStatus(200); }
-
-            long servletEnd = System.nanoTime();
-            long servletElapsed = servletEnd - servletStart;
-            autoSearchTimes.write(queryElapsed + " " + query2Elapsed + " " + query3Elapsed + " " + servletElapsed + "\n");
-            autoSearchTimes.close();
-        } catch (Exception e) {
-            // write error message JSON object to output
-            JsonObject jsonObject = new JsonObject();
-            JsonArray errorArray = new JsonArray();
-            jsonObject.addProperty("errorMessage", e.getMessage() + "from generateResults");
-            errorArray.add(jsonObject);
-            response.getWriter().write(errorArray.toString());
-
-            // set response status to 500 (Internal Server Error)
-            response.setStatus(500);
-        }
+//        long servletStart = System.nanoTime();
+//
+//        String userInput = request.getParameter("input");
+//        if (userInput != null) {
+//            // create the string for full text matching in boolean mode
+//            String[] inputSplit = userInput.split(" ");
+//            String keywords = "";
+//            for (String s : inputSplit) {
+//                keywords += "+" + s + "* ";
+//            }
+//            keywords = keywords.substring(0, keywords.length()-1);
+//
+//            // call the function to create the results
+//            JsonArray suggestions = generateSuggestions(keywords);
+//
+//            // if the size of the results is 1 and the object has errorMessage, set response as failure
+//            if (suggestions.size() == 1 && suggestions.get(0).getAsJsonObject().get("errorMessage") != null) {
+//                response.setStatus(500);
+//            }
+//            else { response.setStatus(200); }
+//
+//            response.getWriter().write(suggestions.toString());
+//            return;
+//        }
+//        else { response.setContentType("application/json; charset=utf-8"); }    // Response mime type
+//
+//        String query = request.getParameter("query");
+//        String nMovies = request.getParameter("nMovies");
+//        String pageNumber = request.getParameter("page");
+//        String sortingOption = request.getParameter("sorting");
+//
+//        String[] querySplit = query.split(" ");
+//        String keywords = "";
+//        for (String s : querySplit) {
+//            keywords += "+" + s + "* ";
+//        }
+//        keywords = keywords.substring(0, keywords.length()-1);
+//
+//        try (Connection conn = dataSource.getConnection()) {
+//            // if the page is an even number, always generate the current page of results and the next
+//            if (Integer.parseInt(pageNumber) % 2 == 0) {
+//                JsonArray jsonArray = generateResults(response, conn, keywords, nMovies, pageNumber, sortingOption);
+//                response.getWriter().write(jsonArray.toString());
+//                JsonArray nextPageArray = generateResults(response, conn, keywords, nMovies, Integer.toString(Integer.parseInt(pageNumber)+1), sortingOption);
+//                currentNMovies = nMovies;
+//                currentPageNumber = pageNumber;
+//                currentSortingOption = sortingOption;
+//                nextPageResults = nextPageArray;
+//            }
+//            // if the page number is an odd number
+//            else if (Integer.parseInt(pageNumber) % 2 == 1) {
+//                // if the page number is the next page,
+//                if (Integer.parseInt(pageNumber) == Integer.parseInt(currentPageNumber)+1) {
+//                    // if the settings are not the same, generate new nextPageResults and send
+//                    if (!currentNMovies.equals(nMovies) || !currentSortingOption.equals(sortingOption)) {
+//                        nextPageResults = generateResults(response, conn, keywords, nMovies, pageNumber, sortingOption);
+//                        currentNMovies = nMovies;
+//                        currentSortingOption = sortingOption;
+//                    }
+//                    // statement reached if settings are same thus send nextPage
+//                    currentPageNumber = pageNumber;
+//                    response.getWriter().write(nextPageResults.toString());
+//                }
+//                // if the page number is not the next page, generate results for previous page and send
+//                else {
+//                    JsonArray previousPageResults = generateResults(response, conn, keywords, nMovies, pageNumber, sortingOption);
+//                    currentNMovies = nMovies;
+//                    currentSortingOption = sortingOption;
+//                    currentPageNumber = pageNumber;
+//                    response.getWriter().write(previousPageResults.toString());
+//                }
+//            }
+//            if (response.getStatus() == 500) { }
+//            else { response.setStatus(200); }
+//
+//            long servletEnd = System.nanoTime();
+//            long servletElapsed = servletEnd - servletStart;
+//            autoSearchTimes.write(queryElapsed + " " + query2Elapsed + " " + query3Elapsed + " " + servletElapsed + "\n");
+//            autoSearchTimes.close();
+//        } catch (Exception e) {
+//            // write error message JSON object to output
+//            JsonObject jsonObject = new JsonObject();
+//            JsonArray errorArray = new JsonArray();
+//            jsonObject.addProperty("errorMessage", e.getMessage() + "from generateResults");
+//            errorArray.add(jsonObject);
+//            response.getWriter().write(errorArray.toString());
+//
+//            // set response status to 500 (Internal Server Error)
+//            response.setStatus(500);
+//        }
     }
 }
