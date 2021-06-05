@@ -214,14 +214,6 @@ public class AutoSearchServlet extends HttpServlet {
         // handle user inputs from autocomplete box
         // only reached if parameter in given link has "input" which is only written to link if the user has not
         // pressed enter or clicked the search button, otherwise it would be parameter "query" for completed user input
-        try {
-            autoSearchTimes = new FileWriter("/home/ubuntu/" +
-                                                "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt",true);
-
-        } catch (IOException e) {
-            System.out.println("IOException: " + e.getMessage());
-            throw e;
-        }
         long servletStart = System.nanoTime();
 
         String userInput = request.getParameter("input");
@@ -299,13 +291,21 @@ public class AutoSearchServlet extends HttpServlet {
 
             long servletEnd = System.nanoTime();
             long servletElapsed = servletEnd - servletStart;
-            autoSearchTimes.write(queryElapsed + " " + query2Elapsed + " " + query3Elapsed + " " + servletElapsed + "\n");
-            autoSearchTimes.close();
+
+            try {
+                autoSearchTimes = new FileWriter("/home/ubuntu/" +
+                        "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt",true);
+                autoSearchTimes.write(queryElapsed + " " + query2Elapsed + " " + query3Elapsed + " " + servletElapsed + "\n");
+                autoSearchTimes.close();
+            } catch (IOException e) {
+                System.out.println("IOException: " + e.getMessage());
+                throw e;
+            }
         } catch (Exception e) {
             // write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
             JsonArray errorArray = new JsonArray();
-            jsonObject.addProperty("errorMessage", e.getMessage() + "from generateResults");
+            jsonObject.addProperty("errorMessage", e.getMessage());
             errorArray.add(jsonObject);
             response.getWriter().write(errorArray.toString());
 
