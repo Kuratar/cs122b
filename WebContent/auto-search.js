@@ -103,6 +103,8 @@ function handleAutoSearchResult(resultData) {
         return;
     }
     else if (resultData.length === 1 && resultData[0]["errorMessage"] !== undefined) {
+        alert(resultData);
+        alert(resultData[0]);
         console.log("error from auto search servlet: " + resultData[0]["errorMessage"]);
         return;
     }
