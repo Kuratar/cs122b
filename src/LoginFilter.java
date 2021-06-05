@@ -70,6 +70,11 @@ public class LoginFilter implements Filter {
         staffURIs.add("_dashboard.html");
         staffURIs.add("_dashboard.js");
         staffURIs.add("api/loginstaff");
+
+        // project 5
+        allowedURIs.add("auto-search.html");
+        allowedURIs.add("auto-search.js");
+        allowedURIs.add("api/auto-search");
     }
 
     public void destroy() {
