@@ -72,27 +72,33 @@ function handleResult(resultData) {
     // find the empty h3 body by id "movie_info"
     let movieInfoElement = jQuery("#movie_info");
 
-    let genreIds = resultData[0]["movie_genreIds"];
-    let genreNames = resultData[0]["movie_genreNames"];
-    console.log(genreIds);
-    console.log(genreNames);
-    let genreIdsSplit = genreIds.split(", ");
-    let genreNamesSplit = genreNames.split(", ");
-    console.log(genreIdsSplit);
-    console.log(genreNamesSplit);
-    let genreHTML = "<p>Genre(s): ";
-    for (let i = 0; i < genreIdsSplit.length; i++) {
-        genreHTML +=
-            // add a link to browse-genre.html with id, nMovies, page passed with GET url parameter
-            '<a href="browse-genre.html?id=' + genreIdsSplit[i] +
-            '&nMovies=' + nMovies +
-            '&page=0' +
-            '&sorting=' + sortingOption + '">' +
-            genreNamesSplit[i] + // display star_name for the link text
-            '</a>' + ", ";
+    let genreHTML;
+    if (resultData[0]["movie_genreIds"] !== "") {
+        let genreIds = resultData[0]["movie_genreIds"];
+        let genreNames = resultData[0]["movie_genreNames"];
+        console.log(genreIds);
+        console.log(genreNames);
+        let genreIdsSplit = genreIds.split(", ");
+        let genreNamesSplit = genreNames.split(", ");
+        console.log(genreIdsSplit);
+        console.log(genreNamesSplit);
+        genreHTML = "<p>Genre(s): ";
+        for (let i = 0; i < genreIdsSplit.length; i++) {
+            genreHTML +=
+                // add a link to browse-genre.html with id, nMovies, page passed with GET url parameter
+                '<a href="browse-genre.html?id=' + genreIdsSplit[i] +
+                '&nMovies=' + nMovies +
+                '&page=0' +
+                '&sorting=' + sortingOption + '">' +
+                genreNamesSplit[i] + // display star_name for the link text
+                '</a>' + ", ";
+        }
+        genreHTML = genreHTML.slice(0, -2);
+        genreHTML += "</p>";
     }
-    genreHTML = genreHTML.slice(0, -2);
-    genreHTML += "</p>";
+    else {
+        genreHTML = "<p>Genre(s): None</p>";
+    }
 
     // append two html <p> created to the h3 body, which will refresh the page
     movieInfoElement.append("<p>Movie Title: " + resultData[0]["movie_title"] + "</p>" +
@@ -107,36 +113,42 @@ function handleResult(resultData) {
     // Find the empty table body by id "movie_table_body"
     let movieTableBodyElement = jQuery("#star_table_body");
 
-    // Concatenate the html tags with resultData jsonObject to create table rows
-    let starIds = resultData[0]["movie_starIds"];
-    let starNames = resultData[0]["movie_starNames"];
-    let starIdsSplit = starIds.split(", ");
-    let starNamesSplit = starNames.split(", ");
-    for (let i = 0; i < starIdsSplit.length; i++) {
-        let rowHTML = "";
-        rowHTML += "<tr>";
-        rowHTML +=
-            "<th style='font-size: x-large'>" +
-            // add a link to single-star.html with id passed with GET url parameter
-            '<a href="single-star.html?id=' + starIdsSplit[i] +
-            '&list=' + movieListType +
-            '&title=' + title +
-            '&year=' + year +
-            '&director=' + director +
-            '&star=' + star +
-            '&genreId=' + genreId +
-            '&char=' + char +
-            '&query=' + query +
-            '&nMovies=' + nMovies +
-            '&page=' + page +
-            '&sorting=' + sortingOption + '">'
-            + starNamesSplit[i] + // display star_name for the link text
-            '</a>' +
-            "</th>";
-        rowHTML += "</tr>";
-        // Append the row created to the table body, which will refresh the page
-        movieTableBodyElement.append(rowHTML);
+    let rowHTML = "";
+    if (resultData[0]["movie_starIds"] !== "") {
+        // Concatenate the html tags with resultData jsonObject to create table rows
+        let starIds = resultData[0]["movie_starIds"];
+        let starNames = resultData[0]["movie_starNames"];
+        let starIdsSplit = starIds.split(", ");
+        let starNamesSplit = starNames.split(", ");
+        for (let i = 0; i < starIdsSplit.length; i++) {
+            rowHTML += "<tr>";
+            rowHTML +=
+                "<th style='font-size: x-large'>" +
+                // add a link to single-star.html with id passed with GET url parameter
+                '<a href="single-star.html?id=' + starIdsSplit[i] +
+                '&list=' + movieListType +
+                '&title=' + title +
+                '&year=' + year +
+                '&director=' + director +
+                '&star=' + star +
+                '&genreId=' + genreId +
+                '&char=' + char +
+                '&query=' + query +
+                '&nMovies=' + nMovies +
+                '&page=' + page +
+                '&sorting=' + sortingOption + '">'
+                + starNamesSplit[i] + // display star_name for the link text
+                '</a>' +
+                "</th>";
+            rowHTML += "</tr>";
+            // Append the row created to the table body, which will refresh the page
+        }
     }
+    else {
+        rowHTML = "<th style=\"font-size: x-large\">None</th>";
+    }
+    movieTableBodyElement.append(rowHTML);
+
 
     // create back button to movie list
     let backMovieListElement = jQuery("#back_movie_list");

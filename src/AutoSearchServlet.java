@@ -128,11 +128,14 @@ public class AutoSearchServlet extends HttpServlet {
                     }
                 }
                 // remove last comma and space
-                genreIds = genreIds.substring(0, genreIds.length()-2);
-                genreNames = genreNames.substring(0, genreNames.length()-2);
-                starIds = starIds.substring(0, starIds.length()-2);
-                starNames = starNames.substring(0, starNames.length()-2);
-
+                if (!genreIds.isEmpty()) {
+                    genreIds = genreIds.substring(0, genreIds.length()-2);
+                    genreNames = genreNames.substring(0, genreNames.length()-2);
+                }
+                if (!starIds.isEmpty()) {
+                    starIds = starIds.substring(0, starIds.length()-2);
+                    starNames = starNames.substring(0, starNames.length()-2);
+                }
                 // Create a JsonObject based on the data we retrieve from rs
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("movie_id", movie_id);
@@ -211,7 +214,7 @@ public class AutoSearchServlet extends HttpServlet {
         // only reached if parameter in given link has "input" which is only written to link if the user has not
         // pressed enter or clicked the search button, otherwise it would be parameter "query" for completed user input
         try {
-            autoSearchTimes = new FileWriter("/home/ubuntu/" +
+            autoSearchTimes = new FileWriter("C:\\Users\\Eric\\Desktop\\School\\CS122B\\projects\\gitclones\\" +
                                                 "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt",true);
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());

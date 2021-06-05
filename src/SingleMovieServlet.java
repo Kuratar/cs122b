@@ -98,8 +98,10 @@ public class SingleMovieServlet extends HttpServlet {
                     while (true) {
                         if (!rs2.next()) {
                             // get rid of last comma and space
-                            genreIds = genreIds.substring(0, genreIds.length()-2);
-                            genreNames = genreNames.substring(0, genreNames.length()-2);
+                            if (!genreIds.isEmpty()) {
+                                genreIds = genreIds.substring(0, genreIds.length()-2);
+                                genreNames = genreNames.substring(0, genreNames.length()-2);
+                            }
                             rs2.close();
                             statement2.close();
                             break;
@@ -114,8 +116,10 @@ public class SingleMovieServlet extends HttpServlet {
                     while (true) {
                         if (!rs3.next()) {
                             // get rid of last comma and space
-                            starIds = starIds.substring(0, starIds.length()-2);
-                            starNames = starNames.substring(0, starNames.length()-2);
+                            if (!starIds.isEmpty()) {
+                                starIds = starIds.substring(0, starIds.length()-2);
+                                starNames = starNames.substring(0, starNames.length()-2);
+                            }
                             rs3.close();
                             statement3.close();
                             break;
