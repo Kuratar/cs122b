@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class LoginFilter implements Filter {
     private final ArrayList<String> allowedURIs = new ArrayList<>();
     private final ArrayList<String> staffURIs = new ArrayList<>();
+    private final ArrayList<String> p5URIs = new ArrayList<>();
 
     /**
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
@@ -37,6 +38,9 @@ public class LoginFilter implements Filter {
             }
             return;
         }
+        else if (this.isP5Url(httpRequest.getRequestURI())) {
+            chain.doFilter(request, response);
+        }
 
         // Redirect to login page if the "user" attribute doesn't exist in session
         if (httpRequest.getSession().getAttribute("user") == null &&
@@ -60,6 +64,10 @@ public class LoginFilter implements Filter {
         return staffURIs.stream().anyMatch(requestURI.toLowerCase()::endsWith);
     }
 
+    private boolean isP5Url(String requestURI) {
+        return p5URIs.stream().anyMatch(requestURI.toLowerCase()::endsWith);
+    }
+
     public void init(FilterConfig fConfig) {
         allowedURIs.add("login.html");
         allowedURIs.add("login.js");
@@ -72,9 +80,9 @@ public class LoginFilter implements Filter {
         staffURIs.add("api/loginstaff");
 
         // project 5
-        allowedURIs.add("auto-search.html");
-        allowedURIs.add("auto-search.js");
-        allowedURIs.add("api/auto-search");
+        p5URIs.add("auto-search.html");
+        p5URIs.add("auto-search.js");
+        p5URIs.add("api/auto-search");
     }
 
     public void destroy() {
