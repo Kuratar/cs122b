@@ -216,7 +216,7 @@ public class AutoSearchServlet extends HttpServlet {
         // pressed enter or clicked the search button, otherwise it would be parameter "query" for completed user input
         try {
             File f = new File("/home/ubuntu/" +
-                    "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt)");
+                    "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt");
             JsonObject j = new JsonObject();
             j.addProperty("exists", Boolean.toString(f.exists()));
             response.getWriter().write(j.toString());
