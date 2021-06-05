@@ -106,6 +106,8 @@ function handleAutoSearchResult(resultData) {
         console.log("error from auto search servlet: " + resultData[0]["errorMessage"]);
         return;
     }
+    alert(resultData);
+    alert(resultData[0]);
 
     console.log("handleAutoSearchResult: populating search table from resultData");
     console.log(resultData);
@@ -269,8 +271,8 @@ jQuery.ajax({
         "&nMovies=" + nMovies + "&page=" + page + "&sorting=" + sorting, // Setting request url, which is mapped by MoviesServlet in Movies.java
     success: (resultData) => handleAutoSearchResult(resultData), // Setting callback function to handle data returned successfully by the MoviesServlet
     error: function(resultData) {
-        console.log(resultData);
-        console.log(resultData[0]);
+        alert(resultData);
+        alert(resultData[0]);
         console.log("error from auto search servlet");
         console.log("error: " + resultData[0]["errorMessage"]);
     }
