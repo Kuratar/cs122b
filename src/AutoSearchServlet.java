@@ -293,10 +293,15 @@ public class AutoSearchServlet extends HttpServlet {
             long servletElapsed = servletEnd - servletStart;
 
             try {
-                autoSearchTimes = new FileWriter("/home/ubuntu/" +
-                        "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt",true);
-                autoSearchTimes.write(queryElapsed + " " + query2Elapsed + " " + query3Elapsed + " " + servletElapsed + "\n");
-                autoSearchTimes.close();
+                String textfile = request.getParameter("textfile");
+                if (textfile != null) {
+//                    autoSearchTimes = new FileWriter("/home/ubuntu/" +
+//                            "cs122b-spring21-team-93/autoSearchPerformance/performances/single1.txt",true);
+                    autoSearchTimes = new FileWriter("/home/ubuntu/" +
+                            "cs122b-spring21-team-93/autoSearchPerformance/performances/" + textfile + ".txt",true);
+                    autoSearchTimes.write(queryElapsed + " " + query2Elapsed + " " + query3Elapsed + " " + servletElapsed + "\n");
+                    autoSearchTimes.close();
+                }
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());
                 throw e;
