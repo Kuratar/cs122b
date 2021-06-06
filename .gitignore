@@ -158,6 +158,11 @@ hs_err_pid*
 ## ignoring target file
 target/
 
+### data files ###
+parser/data
+parser/inconsistencies
+parser/queries
+
 ### Maven ###
 pom.xml.tag
 pom.xml.releaseBackup
@@ -167,9 +172,6 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-mains243.xml
-actors63.xml
-casts124.xml
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
