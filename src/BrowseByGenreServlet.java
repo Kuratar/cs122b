@@ -122,10 +122,14 @@ public class BrowseByGenreServlet extends HttpServlet {
                     }
                 }
                 // remove last comma and space
-                genreIds = genreIds.substring(0, genreIds.length()-2);
-                genreNames = genreNames.substring(0, genreNames.length()-2);
-                starIds = starIds.substring(0, starIds.length()-2);
-                starNames = starNames.substring(0, starNames.length()-2);
+                if (!genreIds.isEmpty()) {
+                    genreIds = genreIds.substring(0, genreIds.length()-2);
+                    genreNames = genreNames.substring(0, genreNames.length()-2);
+                }
+                if (!starIds.isEmpty()) {
+                    starIds = starIds.substring(0, starIds.length()-2);
+                    starNames = starNames.substring(0, starNames.length()-2);
+                }
 
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("movie_id", movieId);

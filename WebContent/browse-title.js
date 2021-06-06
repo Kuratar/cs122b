@@ -143,45 +143,57 @@ function handleBrowseTitleResult(resultData) {
         rowHTML += "<th style=\"font-size: x-large\">" + resultData[i]["movie_year"] + "</th>";
         rowHTML += "<th style=\"font-size: x-large\">" + resultData[i]["movie_director"] + "</th>";
 
-        // add genres in one column with links
-        let genreIdsSplit = resultData[i]["genre_ids"].split(", ");
-        let genresSplit = resultData[i]["genre_names"].split(", ");
-        let genreHTML = "";
-        genreHTML += "<th style=\"font-size: x-large\">";
-        for (let j = 0; j < genresSplit.length; j++) {
-            genreHTML +=
-                // add a link to browse-genre.html with id, nMovies, page passed with GET url parameter
-                '<a href="browse-genre.html?id=' + genreIdsSplit[j] +
-                '&nMovies=' + nMovies +
-                '&page=0' +
-                '&sorting=' + sorting + '">'
-                + genresSplit[j] + // display star_name for the link text
-                '</a>' + ", ";
+        if (resultData[i]["genre_ids"] !== "") {
+            // add genres in one column with links
+            let genreIdsSplit = resultData[i]["genre_ids"].split(", ");
+            let genresSplit = resultData[i]["genre_names"].split(", ");
+            let genreHTML = "";
+            genreHTML += "<th style=\"font-size: x-large\">";
+            for (let j = 0; j < genresSplit.length; j++) {
+                genreHTML +=
+                    // add a link to browse-genre.html with id, nMovies, page passed with GET url parameter
+                    '<a href="browse-genre.html?id=' + genreIdsSplit[j] +
+                    '&nMovies=' + nMovies +
+                    '&page=0' +
+                    '&sorting=' + sorting + '">'
+                    + genresSplit[j] + // display star_name for the link text
+                    '</a>' + ", ";
+            }
+            genreHTML = genreHTML.slice(0, -2);
+            genreHTML += "</th>";
+            rowHTML += genreHTML;
         }
-        genreHTML = genreHTML.slice(0, -2);
-        genreHTML += "</th>";
-        rowHTML += genreHTML;
+        else {
+            let genreHTML = "<th style=\"font-size: x-large\">None</th>";
+            rowHTML += genreHTML;
+        }
 
-        // add stars in one column with links
-        let starsIdsSplit = resultData[i]["star_ids"].split(", ");
-        let starsSplit = resultData[i]["star_names"].split(", ");
-        let starHTML = "";
-        starHTML += "<th style=\"font-size: x-large\">";
-        for (let j = 0; j < starsSplit.length; j++) {
-            starHTML +=
-                // add a link to single-star.html with id passed with GET url parameter
-                '<a href="single-star.html?id=' + starsIdsSplit[j] +
-                '&list=browseTitle' +
-                '&char=' + char +
-                '&nMovies=' + nMovies +
-                '&page=' + page +
-                '&sorting=' + sorting + '">'
-                + starsSplit[j] + // display star_name for the link text
-                '</a>' + ", ";
+        if (resultData[i]["star_ids"] !== "") {
+            // add stars in one column with links
+            let starsIdsSplit = resultData[i]["star_ids"].split(", ");
+            let starsSplit = resultData[i]["star_names"].split(", ");
+            let starHTML = "";
+            starHTML += "<th style=\"font-size: x-large\">";
+            for (let j = 0; j < starsSplit.length; j++) {
+                starHTML +=
+                    // add a link to single-star.html with id passed with GET url parameter
+                    '<a href="single-star.html?id=' + starsIdsSplit[j] +
+                    '&list=browseTitle' +
+                    '&char=' + char +
+                    '&nMovies=' + nMovies +
+                    '&page=' + page +
+                    '&sorting=' + sorting + '">'
+                    + starsSplit[j] + // display star_name for the link text
+                    '</a>' + ", ";
+            }
+            starHTML = starHTML.slice(0, -2);
+            starHTML += "</th>";
+            rowHTML += starHTML;
         }
-        starHTML = starHTML.slice(0, -2);
-        starHTML += "</th>";
-        rowHTML += starHTML;
+        else {
+            let starHTML = "<th style=\"font-size: x-large\">None</th>";
+            rowHTML += starHTML;
+        }
 
         rowHTML += "<th style=\"font-size: x-large\">" + resultData[i]["movie_rating"] + "</th>";
 

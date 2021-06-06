@@ -185,8 +185,10 @@ public class SearchServlet extends HttpServlet {
                     stars += rstemp.getString("name") + ", "; //append each star_id to empty string
                     starIds += rstemp.getString("id") + ", ";
                 }
-                starIds = starIds.substring(0, starIds.length()-2);
-                stars = stars.substring(0, stars.length()-2);
+                if (!starIds.isEmpty()) {
+                    starIds = starIds.substring(0, starIds.length()-2);
+                    stars = stars.substring(0, stars.length()-2);
+                }
                 movie.addProperty("star_ids", starIds);
                 movie.addProperty("star_names", stars); //add the star_ids as a property of the jsonObject
                 rstemp.close();
@@ -208,8 +210,10 @@ public class SearchServlet extends HttpServlet {
                     genres += rstemp.getString("name") + ", ";
                     genreIDs += rstemp.getString("id") + ", ";
                 }
-                genreIDs = genreIDs.substring(0, genreIDs.length()-2);
-                genres = genres.substring(0, genres.length()-2);
+                if (!genreIDs.isEmpty()) {
+                    genreIDs = genreIDs.substring(0, genreIDs.length()-2);
+                    genres = genres.substring(0, genres.length()-2);
+                }
                 movie.addProperty("genre_names", genres);
                 movie.addProperty("genre_ids", genreIDs);
                 rstemp.close();
