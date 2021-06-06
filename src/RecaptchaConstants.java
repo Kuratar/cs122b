@@ -7,7 +7,8 @@ public class RecaptchaConstants {
 
     public RecaptchaConstants() {
         try {
-            File file = new File("/home/ubuntu/cs122b-spring21-team-93/secretKey.txt");
+            File file = new File("C:\\Users\\Eric\\Desktop\\School\\CS122B\\projects\\gitclones\\cs122b-spring21-team-93\\secretKey.txt");
+            //File file = new File("/home/ubuntu/cs122b-spring21-team-93/secretKey.txt");
             Scanner reader = new Scanner(file);
             if (reader.hasNextLine()) {
                 SECRET_KEY = reader.nextLine();
