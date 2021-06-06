@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class log_processing {
     public static void main(String[] args) {
         try {
-            File f = new File("autoSearchPerformance/performances/single1.txt");
+            File f = new File("autoSearchPerformance/performances/logs/single1.txt");
             Scanner reader = new Scanner(f);
 
             long lines = 0;
@@ -24,6 +24,7 @@ public class log_processing {
                 totalTS += TS;
                 totalTJ += TJ;
             }
+            System.out.println("Samples: " + lines);
 
             System.out.println("**TS** Average Search Servlet Time(ms): " + (totalTS / lines));
             System.out.println("**TJ** Average JDBC Time(ms):           " + (totalTJ / lines));
