@@ -37,9 +37,6 @@ public class LoginFilter implements Filter {
             }
             return;
         }
-        else if (this.isP5Url(httpRequest.getRequestURI())) {
-            chain.doFilter(request, response);
-        }
 
         // Redirect to login page if the "user" attribute doesn't exist in session
         if (httpRequest.getSession().getAttribute("user") == null &&
@@ -61,10 +58,6 @@ public class LoginFilter implements Filter {
 
     private boolean isStaffUrl(String requestURI) {
         return staffURIs.stream().anyMatch(requestURI.toLowerCase()::endsWith);
-    }
-
-    private boolean isP5Url(String requestURI) {
-        return p5URIs.stream().anyMatch(requestURI.toLowerCase()::endsWith);
     }
 
     public void init(FilterConfig fConfig) {
