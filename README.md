@@ -8,19 +8,19 @@ Project 3 Video Demo Redo URL (No pauses):  https://vimeo.com/552690167
 
 Project 4 Video Demo URL:                   https://youtu.be/qcjEw1WuSNo
 
-Project 5 Video Demo URL: 		    https://vimeo.com/559511161
+Project 5 Video Demo URL: 		            https://vimeo.com/559511161
 
 Instructions for Deployment:
-    1. git clone into repository
-    2. run mvn clean package
-    3. move built war into tomcat/webapps
-    4. go to URL: http://ec2-18-188-209-46.us-east-2.compute.amazonaws.com:8080/cs122b-spring21-project1-api-example/
+  1. git clone into repository
+  2. run mvn clean package
+  3. move built war into tomcat/webapps
+  4. go to URL: http://ec2-18-188-209-46.us-east-2.compute.amazonaws.com:8080/cs122b-spring21-project1-api-example/
 
 Project 4 Instructions for Deployment:
-    1. git clone into repository
-    2. run mvn clean package
-    3. move built war into tomcat/webapps
-    4. go to URL: https://18.144.57.54:8443/cs122b-spring21-project1-api-example/
+  1. git clone into repository
+  2. run mvn clean package
+  3. move built war into tomcat/webapps
+  4. go to URL: https://18.144.57.54:8443/cs122b-spring21-project1-api-example/
 
 Contributions:
 
@@ -94,9 +94,20 @@ Project 5:
     
     - #### Names: Tzu-Kai Rich Mo, Eric Nguyen
     
-    - #### Project 5 Video Demo Link:
+    - #### Project 5 Video Demo Link: https://vimeo.com/559511161
 
     - #### Instruction of deployment:
+
+    1. git clone into repository
+    2. run mvn clean package
+    3. move built war into tomcat/webapps
+    4. Repeat for 3 instances: single, master, slave
+    5. Single instance url: http://54.183.131.0:8080/cs122b-spring21-project1-api-example/
+      a. Alternatively for HTTPS: https://54.183.131.0:8443/cs122b-spring21-project1-api-example/
+    6. Master instance url: http://52.53.163.81:8080/cs122b-spring21-project1-api-example/
+    7. Slave instance url: http://54.176.156.248:8080/cs122b-spring21-project1-api-example/
+    8. AWS load balancer url: 18.144.99.128/cs122b-spring21-project1-api-example/
+    9. GCP load balancer url: 34.70.167.132/cs122b-spring21-project1-api-example/
 
     - #### Collaborations and Work Distribution:
 
@@ -107,15 +118,16 @@ Project 5:
 
 - # Connection Pooling
     - #### Include the filename/path of all code/configuration files in GitHub of using JDBC Connection Pooling.
-
-    cs122b-spring21-team-93/WebContent/META-INF/context.xml
-    All files in: cs122b-spring21-team-93/src
+  
+    1. cs122b-spring21-team-93/WebContent/META-INF/context.xml 
+    2. All files in: cs122b-spring21-team-93/src
     
     - #### Explain how Connection Pooling is utilized in the Fabflix code.
 
-    Connection Pooling:
-            factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
-            maxTotal="100" maxIdle="30" maxWaitMillis="10000"
+    Connection Pooling: 
+  
+      factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+      maxTotal="100" maxIdle="30" maxWaitMillis="10000"
 
         maxTotal        -   Represents the maximum number of connections allowed in the pool at any time which is set to
                             100 connections
@@ -170,10 +182,10 @@ Project 5:
 
 - # Master/Slave
     - #### Include the filename/path of all code/configuration files in GitHub of routing queries to Master/Slave SQL.
-
-    cs122b-spring21-team-93/src/InsertMovieServlet.java
-    cs122b-spring21-team-93/src/InsertStarServlet.java
-    cs122b-spring21-team-93/src/PlaceOrderServlet.java
+  
+    1. cs122b-spring21-team-93/src/InsertMovieServlet.java
+    2. cs122b-spring21-team-93/src/InsertStarServlet.java
+    3. cs122b-spring21-team-93/src/PlaceOrderServlet.java
 
     - #### How read/write requests were routed to Master/Slave SQL?
 
