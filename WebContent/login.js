@@ -11,12 +11,12 @@ function handleLoginResult(resultDataString) {
     console.log(resultDataJson);
     console.log(resultDataJson["status"]);
 
-    // If login succeeds, it will redirect the user to index.html
-    // if (resultDataJson["recaptcha"] === "fail")
-    // {
-    //     $("#recaptcha_error_message").text(resultDataJson["recaptcha-message"]);
-    // }
-    // else{
+    //If login succeeds, it will redirect the user to index.html
+    if (resultDataJson["recaptcha"] === "fail")
+    {
+        $("#recaptcha_error_message").text(resultDataJson["recaptcha-message"]);
+    }
+    else{
         if (resultDataJson["status"] === "success") {
             window.location.replace("index.html");
         } else {
@@ -26,7 +26,7 @@ function handleLoginResult(resultDataString) {
             console.log(resultDataJson["message"]);
             $("#login_error_message").text(resultDataJson["message"]);
         }
-    //}
+    }
 
 }
 
